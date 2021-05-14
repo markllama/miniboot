@@ -2,6 +2,8 @@
 #
 # This script uses buildah to compose a container image with a DHCP server
 #
+set -x
+
 CONTAINER_NAME=miniboot
 #BASE_IMAGE=registry.access.redhat.com/ubi8/ubi
 BASE_IMAGE=fedora:34
@@ -15,6 +17,8 @@ buildah config --label maintainer="${MAINTAINER}" ${CONTAINER_NAME}
 MOUNTPOINT=$(buildah mount ${CONTAINER_NAME})
 
 dnf -y --install-root ${MOUNTPOINT} tftp-server
+
+buildah commit $container miniboot
 
 buildah unmount ${CONTAINER_NAME}
 
