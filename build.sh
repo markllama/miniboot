@@ -5,8 +5,8 @@
 set -x
 
 CONTAINER_NAME=miniboot
-#BASE_IMAGE=registry.access.redhat.com/ubi8/ubi
-BASE_IMAGE=fedora:34
+BASE_IMAGE=registry.access.redhat.com/ubi8/ubi
+#BASE_IMAGE=fedora:34
 
 MAINTAINER="Mark Lamourine <markllama@gmail.com>"
 
