@@ -1,0 +1,42 @@
+#
+# DHCP Server Configuration file.
+#   see /usr/share/doc/dhcp-server/dhcpd.conf.example
+#   see dhcpd.conf(5) man page
+#
+# server:
+#   name: <fqdn>
+#   addr: <dotted_quad>
+# dns:
+#   domain: <fqdn>
+#   server: <dotted_quad>
+# ipv4:
+#   base: <dotted_quad>
+#   mask: <dotted_quad>
+#   gateway: <dotted_quad>
+#   address: <dotted_quad>
+#   mac: <mac_addr>
+
+server-name "{{ server.name }}";
+
+option domain-name "{{ dns.domain }}";
+option domain-name-servers "{{ dns.server }}" ;
+
+option loader-configfile "pxelinux.0";
+option loader-pathprefix "pxelinux.cfg/";
+
+default-lease-time 600;
+max-lease-time 7200;
+
+allow booting;
+allow bootp;
+
+subnet {{ ipv4.base }} netmask {{ ipv4.mask }} {
+  option routers {{ ipv4.gateway }};
+}
+
+host  pxeclient {
+  hardware ethernet {{ ipv4.mac }}; 
+  fixed-address {{ ipv4.address }};
+  next-server "{{ server.name }}";
+  filename "pxelinux.0";
+}
