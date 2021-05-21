@@ -37,6 +37,6 @@ subnet {{ ipv4.base }} netmask {{ ipv4.mask }} {
 host  pxeclient {
   hardware ethernet {{ ipv4.mac }}; 
   fixed-address {{ ipv4.address }};
-  next-server "{{ server.name }}";
+  next-server "{{ server.addr }}";
   filename "pxelinux.0";
 }
