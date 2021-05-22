@@ -15,7 +15,7 @@ COREOS_ROOTRD=fedora-coreos-${COREOS_VERSION}-live-rootfs.x86_64.img
 MAINTAINER="Mark Lamourine <markllama@gmail.com>"
 
 REPO_RPMS=https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm
-RPMS=(iproute dhcp-server tftp-server syslinux-tftpboot lighttpd python3-pip python3-jinja2)
+RPMS=(iproute dhcp-server tftp-server syslinux-tftpboot lighttpd python3-pip python3-jinja2 python3-pyyaml)
 SERVICES=(dhcpd tftp-server lighttpd)
 MOUNTPOINTS=(/etc/dhcpd/dhcpd.conf /etc/lighttpd/lighttpd.conf)
 
@@ -44,6 +44,9 @@ done
 
 buildah run ${CONTAINER_NAME} pip3 install jinja2-cli
 
+buildah run ${CONTAINER_NAME} curl -L -o /usr/local/bin/butane \
+        https://github.com/coreos/butane/releases/download/v0.11.0/butane-x86_64-unknown-linux-gnu
+
 buildah run ${CONTAINER_NAME} cp /tftpboot/{pxelinux.0,ldlinux.c32} /var/lib/tftpboot
 buildah run ${CONTAINER_NAME} mkdir -p /var/lib/tftpboot/pxelinux.cfg
 buildah run ${CONTAINER_NAME} dnf -y remove syslinux-tftpboot
@@ -63,6 +66,8 @@ buildah run ${CONTAINER_NAME} dnf clean all
 ## Create config file locations or accept inputs to start
 ##
 buildah copy ${CONTAINER_NAME} templates /opt/templates
+buildah run ${CONTAINER_NAME} mkdir /opt/config
+buildah config --volume /opt/config ${CONTAINER_NAME}
 
 # dhcpd.conf
 # /var/lib/tftpboot

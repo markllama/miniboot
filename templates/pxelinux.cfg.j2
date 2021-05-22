@@ -2,6 +2,6 @@ DEFAULT pxeboot
 TIMEOUT 20
 PROMPT 0
 LABEL pxeboot
-    KERNEL {{ coreos.kernel }}
-    APPEND initrd={{ coreos.initrd }},{{ coreos_ramdisk_live }} coreos.inst.install_dev=/dev/sda coreos.inst.ignition_url=http://{{ ignition.host }}:{{ ignition.port }}/{{ ignition.filename }}
+    KERNEL coreos/kernel
+    APPEND initrd=coreos/initrd,coreos/rootrd coreos.inst.install_dev=/dev/sda coreos.inst.ignition_url=http://{{ server.addr }}:8069/config.ign
 IPAPPEND 2

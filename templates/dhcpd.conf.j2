@@ -9,12 +9,13 @@
 # dns:
 #   domain: <fqdn>
 #   server: <dotted_quad>
-# ipv4:
+# network:
 #   base: <dotted_quad>
 #   mask: <dotted_quad>
 #   gateway: <dotted_quad>
-#   address: <dotted_quad>
+# client:
 #   mac: <mac_addr>
+#   address: <dotted_quad>
 
 server-name "{{ server.name }}";
 
@@ -30,13 +31,13 @@ max-lease-time 7200;
 allow booting;
 allow bootp;
 
-subnet {{ ipv4.base }} netmask {{ ipv4.mask }} {
-  option routers {{ ipv4.gateway }};
+subnet {{ network.base }} netmask {{ network.mask }} {
+  option routers {{ network.gateway }};
 }
 
 host  pxeclient {
-  hardware ethernet {{ ipv4.mac }}; 
-  fixed-address {{ ipv4.address }};
+  hardware ethernet {{ client.mac }}; 
+  fixed-address {{ client.address }};
   next-server "{{ server.addr }}";
   filename "pxelinux.0";
 }

@@ -17,7 +17,7 @@ clean_all: clean
 	rm -rf coreos
 
 run:
-	podman run -it --rm --privileged --name miniboot --net=host localhost/miniboot /bin/bash
+	podman run -it --rm --privileged --name miniboot --net=host --volume $(PWD)/test:/opt/config localhost/miniboot /bin/bash
 
 stop:
 	-podman stop miniboot
@@ -31,4 +31,6 @@ coreos/$(COREOS_KERNEL):
 
 coreos/$(COREOS_INITFS): coreos/$(COREOS_KERNEL)
 coreos/$(COREOS_ROOTFS): coreos/$(COREOS_KERNEL)
+
+
 

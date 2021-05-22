@@ -3,3 +3,7 @@
 
 # Ignore image files
 coreos
+
+# Ignore real config files
+config.yaml
+
