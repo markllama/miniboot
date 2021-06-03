@@ -1,0 +1,13 @@
+{
+  "ignition": {"version": "3.2.0"},
+  "passwd": {
+    "users": [
+      {
+        "name": "rack",
+        "passwordHash": "{{ rack_password }}",
+        "sshAuthorizedKeys": [
+          "{{ rack_public_key }}"
+        ]
+    ]
+  }         
+}
