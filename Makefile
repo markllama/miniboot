@@ -1,16 +1,17 @@
 #!make
 
-IMAGE_NAME=miniboot
+IMAGE_NAME=quay.io/markllama/miniboot
+CONTAINER_NAME=miniboot-build
 #COREOS_VERSION=34.20210427.3.0
 COREOS_KERNEL=fedora-coreos-$(COREOS_VERSION)-live-kernel-x86_64
 COREOS_INITFS=fedora-coreos-$(COREOS_VERSION)-live-initramfs.x86_64.img
 COREOS_ROOTFS=fedora-coreos-$(COREOS_VERSION)-live-rootfs.x86_64.img
 
-build: coreos
-	buildah unshare ./build.sh $(IMAGE_NAME)
+build:
+	buildah unshare ./build.sh $(CONTAINER_NAME) $(IMAGE_NAME)
 
 clean:
-	-buildah delete $(IMAGE_NAME)
+	-buildah delete $(CONTAINER_NAME)
 	-podman rmi ${IMAGE_NAME}
 
 clean_all: clean
@@ -21,17 +22,20 @@ cli:
 	  --volume $(PWD)/test:/opt/config \
 	  --volume $(PWD)/coreos:/var/lib/tftpboot/coreos \
 	  --entrypoint=/bin/bash \
-	  localhost/miniboot
+	  ${IMAGE_NAME}
 
 run:
 	podman run -d --rm --privileged --name miniboot --net=host \
 	  --volume $(PWD)/test:/opt/config \
 	  --volume $(PWD)/coreos:/var/lib/tftpboot/coreos \
-	  localhost/miniboot
+	  ${IMAGE_NAME}
 
 stop:
 	-podman stop miniboot
 	-podman rm miniboot
+
+push:
+	podman push ${IMAGE_NAME}
 
 coreos:
 	mkdir -p coreos
