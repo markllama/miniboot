@@ -21,14 +21,21 @@ buildah config --port 68/tcp,68/udp,69/tcp,69/udp ${CONTAINER_NAME}
 
 buildah run ${CONTAINER_NAME} dnf -y install ${REPO_RPMS}
 
-for RPM in ${RPMS[@]} ; do
-    buildah run ${CONTAINER_NAME} dnf -y install ${RPM}
-done
+buildah run ${CONTAINER_NAME} dnf -y install ${RPMS[@]}
 
 buildah run ${CONTAINER_NAME} pip3 install jinja2-cli
 
 buildah run ${CONTAINER_NAME} systemctl enable dhcpd
 buildah run ${CONTAINER_NAME} systemctl enable tftp
+
+# Install PXELINUX elements into tftpboot directory
+buildah run ${CONTAINER_NAME} dnf -y install syslinux-tftpboot
+buildah run ${CONTAINER_NAME} cp /tftpboot/{pxelinux.0,ldlinux.c32,lpxelinux.0} /var/lib/tftpboot
+buildah run ${CONTAINER_NAME} mkdir /var/lib/tftpboot/pxelinux.cfg
+buildah run ${CONTAINER_NAME} dnf -y remove syslinux-tftpboot
+
+buildah run ${CONTAINER_NAME} mkdir /var/lib/tftpboot/coreos
+
 
 buildah run ${CONTAINER_NAME} dnf clean all
 

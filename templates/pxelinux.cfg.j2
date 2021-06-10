@@ -3,5 +3,5 @@ TIMEOUT 20
 PROMPT 0
 LABEL pxeboot
     KERNEL coreos/kernel
-    APPEND initrd=coreos/initrd,coreos/rootrd coreos.inst.install_dev=/dev/sda coreos.inst.ignition_url=http://{{ server.addr }}:8069/config.ign
+    APPEND initrd=coreos/initrd,coreos/rootrd console=ttyS0,115200n8 ignition.firstboot ignition.platform.id=metal ignition.config.url=tftp://{{ server.addr }}/config.ign systemd.unified_cgroup_hierarchy=0
 IPAPPEND 2

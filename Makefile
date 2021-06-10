@@ -18,16 +18,16 @@ clean_all: clean
 	rm -rf coreos
 
 cli:
-	podman run -it --rm --privileged --name miniboot --net=host \
-	  --volume $(PWD)/test:/opt/config \
-	  --volume $(PWD)/coreos:/var/lib/tftpboot/coreos \
+	+podman run -it --rm --privileged --name miniboot --net=host \
+	  --volume $(shell pwd)/test:/opt/config \
+	  --volume $(shell pwd)/coreos:/var/lib/tftpboot/coreos \
 	  --entrypoint=/bin/bash \
 	  ${IMAGE_NAME}
 
 run:
-	podman run -d --rm --privileged --name miniboot --net=host \
-	  --volume $(PWD)/test:/opt/config \
-	  --volume $(PWD)/coreos:/var/lib/tftpboot/coreos \
+	+podman run -d --rm --privileged --name miniboot --net=host \
+	  --volume $(shell pwd)/test:/opt/config \
+	  --volume $(shell pwd)/coreos:/var/lib/tftpboot/coreos \
 	  ${IMAGE_NAME}
 
 stop:
