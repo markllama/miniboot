@@ -1,0 +1,17 @@
+{
+  "ignition": {"version": "3.3.0-experimental"},
+  "passwd": {
+    "users": [
+      {
+        "name": "{{ user.name }}",
+        "passwordHash": "{{ user.password_hash }}",
+        "sshAuthorizedKeys": [
+          "{{ user.public_key }}"
+        ]
+    ]
+  },
+  "kernelArguments": {
+    "shouldExist": ["console=ttyS0"],
+    "shouldNotExist": ["console=tty1"]
+  }
+}
