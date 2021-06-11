@@ -12,7 +12,7 @@ MAINTAINER="Mark Lamourine <markllama@gmail.com>"
 
 REPO_RPMS=https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm
 RPMS=(dhcp-server tftp-server python3-pip python3-pyyaml)
-SERVICES=(dhcpd tftp-server)
+SERVICES=(dhcpd tftp lighttpd)
 
 buildah from --name ${CONTAINER_NAME} ${BASE_IMAGE}
 buildah config --label maintainer="${MAINTAINER}" ${CONTAINER_NAME}
@@ -22,11 +22,13 @@ buildah config --port 68/tcp,68/udp,69/tcp,69/udp ${CONTAINER_NAME}
 buildah run ${CONTAINER_NAME} dnf -y install ${REPO_RPMS}
 
 buildah run ${CONTAINER_NAME} dnf -y install ${RPMS[@]}
+buildah run ${CONTAINER_NAME} dnf -y install --enablerepo epel lighttpd
 
 buildah run ${CONTAINER_NAME} pip3 install jinja2-cli
 
 buildah run ${CONTAINER_NAME} systemctl enable dhcpd
 buildah run ${CONTAINER_NAME} systemctl enable tftp
+buildah run ${CONTAINER_NAME} systemctl enable lighttpd
 
 # Install PXELINUX elements into tftpboot directory
 buildah run ${CONTAINER_NAME} dnf -y install syslinux-tftpboot
@@ -34,7 +36,11 @@ buildah run ${CONTAINER_NAME} cp /tftpboot/{pxelinux.0,ldlinux.c32,lpxelinux.0} 
 buildah run ${CONTAINER_NAME} mkdir /var/lib/tftpboot/pxelinux.cfg
 buildah run ${CONTAINER_NAME} dnf -y remove syslinux-tftpboot
 
+# Try ipxe instead
+buildah add ${CONTAINER_NAME} bin/undionly.kpxe /var/lib/tftpboot/undionly.kpxe
+
 buildah run ${CONTAINER_NAME} mkdir /var/lib/tftpboot/coreos
+buildah run ${CONTAINER_NAME} mkdir /var/www/lighttpd/coreos
 
 
 buildah run ${CONTAINER_NAME} dnf clean all

@@ -1,0 +1,6 @@
+#!ipxe
+BASEURL=http://{{ server.addr }}
+
+kernel $BASEURL/coreos/kernel initrd=main ignition.platform.id=metal coreos.live.rootfs_url=$BASEURL/coreos/rootfs ignition.config.url=$BASEURL/config.ign systemd.unified_cgroup_hierarchy=0 console=ttyS0
+initrd --name main $BASEURL/coreos/initrd
+boot
