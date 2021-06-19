@@ -20,14 +20,14 @@ clean_all: clean
 cli:
 	+podman run -it --rm --privileged --name miniboot --net=host \
 	  --volume $(shell pwd)/test:/opt/config \
-	  --volume $(shell pwd)/coreos:/var/lib/tftpboot/coreos \
+	  --volume $(shell pwd)/coreos:/var/www/lighttpd/coreos \
 	  --entrypoint=/bin/bash \
 	  ${IMAGE_NAME}
 
 run:
 	+podman run -d --rm --privileged --name miniboot --net=host \
 	  --volume $(shell pwd)/test:/opt/config \
-	  --volume $(shell pwd)/coreos:/var/lib/tftpboot/coreos \
+	  --volume $(shell pwd)/coreos:/var/www/lighttpd/coreos \
 	  ${IMAGE_NAME}
 
 stop:

@@ -1,17 +1,36 @@
 {
-  "ignition": {"version": "3.3.0-experimental"},
+  "ignition": {
+    "version": "3.2.0"
+  },
   "passwd": {
     "users": [
+    {% for user in users -%}
       {
         "name": "{{ user.name }}",
         "passwordHash": "{{ user.password_hash }}",
         "sshAuthorizedKeys": [
           "{{ user.public_key }}"
         ]
+      }
+    {%- endfor %}
     ]
   },
-  "kernelArguments": {
-    "shouldExist": ["console=ttyS1"],
-    "shouldNotExist": ["console=tty0", "console=ttyS0,112800n8", "console=ttyS0"]
+  "storage": {
+    "files": [
+      {
+        "path": "/etc/hostname",
+        "contents": {
+          "source": "data:,miniboot%0A"
+        },
+        "mode": 420
+      },
+      {
+        "path": "/etc/ssh/sshd_config.d/20-enable-passwords.conf",
+        "contents": {
+          "source": "data:,%23%20Fedora%20CoreOS%20disables%20SSH%20password%20login%20by%20default.%0A%23%20Enable%20it.%0A%23%20This%20file%20must%20sort%20before%2040-disable-passwords.conf.%0APasswordAuthentication%20yes%0A"
+        },
+        "mode": 384
+      }
+    ]
   }
 }

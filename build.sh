@@ -22,7 +22,7 @@ buildah config --port 68/tcp,68/udp,69/tcp,69/udp ${CONTAINER_NAME}
 buildah run ${CONTAINER_NAME} dnf -y install ${REPO_RPMS}
 
 buildah run ${CONTAINER_NAME} dnf -y install ${RPMS[@]}
-buildah run ${CONTAINER_NAME} dnf -y install --enablerepo epel lighttpd
+buildah run ${CONTAINER_NAME} dnf -y install --enablerepo epel lighttpd tcpdump
 
 buildah run ${CONTAINER_NAME} pip3 install jinja2-cli
 
@@ -39,15 +39,14 @@ buildah run ${CONTAINER_NAME} dnf -y remove syslinux-tftpboot
 # Try ipxe instead
 buildah add ${CONTAINER_NAME} bin/undionly.kpxe /var/lib/tftpboot/undionly.kpxe
 
-buildah run ${CONTAINER_NAME} mkdir /var/lib/tftpboot/coreos
 buildah run ${CONTAINER_NAME} mkdir /var/www/lighttpd/coreos
-
 
 buildah run ${CONTAINER_NAME} dnf clean all
 
 buildah copy ${CONTAINER_NAME} templates /opt/templates
 buildah run ${CONTAINER_NAME} mkdir /opt/config
 buildah config --volume /opt/config ${CONTAINER_NAME}
+buildah config --volume /var/www/lighttpd/coreos ${CONTAINER_NAME}
 
 buildah copy ${CONTAINER_NAME} startup.sh /opt/startup.sh
 buildah run ${CONTAINER_NAME} chmod 755 /opt/startup.sh
