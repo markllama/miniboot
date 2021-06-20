@@ -4,12 +4,11 @@
   },
   "passwd": {
     "users": [
-    {% for user in users -%}
       {
-        "name": "{{ user.name }}",
-        "passwordHash": "{{ user.password_hash }}",
+        "name": "core",
+        "passwordHash": "{{ password_hash }}",
         "sshAuthorizedKeys": [
-          "{{ user.public_key }}"
+          "{{ public_key }}"
         ]
       }
     {%- endfor %}
