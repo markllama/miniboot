@@ -2,16 +2,22 @@
 
 IMAGE_NAME=quay.io/markllama/miniboot
 CONTAINER_NAME=miniboot-build
+INTERFACE=br-prov
 
-build:
+miniboot-oci.tgz: build
+	podman save --format oci-archive ${IMAGE_NAME} --output miniboot-oci.tgz
+
+build: ipxe/src/bin/undionly.kpxe
 	buildah unshare ./build.sh $(CONTAINER_NAME) $(IMAGE_NAME)
 
 clean:
+	-rm miniboot.tgz
 	-buildah delete $(CONTAINER_NAME)
 	-podman rmi ${IMAGE_NAME}
 
-clean_all: clean
+realclean: clean
 	rm -rf coreos
+	cd ipxe/src ; make clean
 
 cli:
 	+podman run -it --rm --privileged --name miniboot --net=host \
@@ -22,7 +28,7 @@ cli:
 
 run:
 	+podman run -d --rm --privileged --name miniboot --net=host \
-	  --env INTERFACE=br-prov \
+	  --env INTERFACE=$(INTERFACE) \
 	  --volume $(shell pwd)/config.yaml:/opt/config.yaml \
 	  --volume $(shell pwd)/coreos:/var/www/lighttpd/coreos \
 	  ${IMAGE_NAME}
@@ -33,6 +39,10 @@ stop:
 
 push:
 	podman push ${IMAGE_NAME}
+
+ipxe/src/bin/undionly.kpxe:
+	mkdir -p bin
+	cd ipxe/src ; make bin/undionly.kpxe
 
 coreos:
 	mkdir -p coreos

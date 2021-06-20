@@ -8,3 +8,5 @@ f34
 # Ignore real config files
 config.yaml
 
+# Ignore the final container image
+miniboot-oci.tgz

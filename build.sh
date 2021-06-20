@@ -30,14 +30,8 @@ buildah run ${CONTAINER_NAME} systemctl enable dhcpd
 buildah run ${CONTAINER_NAME} systemctl enable tftp
 buildah run ${CONTAINER_NAME} systemctl enable lighttpd
 
-# Install PXELINUX elements into tftpboot directory
-buildah run ${CONTAINER_NAME} dnf -y install syslinux-tftpboot
-buildah run ${CONTAINER_NAME} cp /tftpboot/{pxelinux.0,ldlinux.c32,lpxelinux.0} /var/lib/tftpboot
-buildah run ${CONTAINER_NAME} mkdir /var/lib/tftpboot/pxelinux.cfg
-buildah run ${CONTAINER_NAME} dnf -y remove syslinux-tftpboot
-
 # Try ipxe instead
-buildah add ${CONTAINER_NAME} bin/undionly.kpxe /var/lib/tftpboot/undionly.kpxe
+buildah add ${CONTAINER_NAME} ipxe/src/bin/undionly.kpxe /var/lib/tftpboot/undionly.kpxe
 
 buildah run ${CONTAINER_NAME} mkdir /var/www/lighttpd/coreos
 
