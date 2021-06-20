@@ -26,6 +26,7 @@ cli:
 
 run:
 	+podman run -d --rm --privileged --name miniboot --net=host \
+	  --env INTERFACE=br-prov \
 	  --volume $(shell pwd)/test:/opt/config \
 	  --volume $(shell pwd)/coreos:/var/www/lighttpd/coreos \
 	  ${IMAGE_NAME}

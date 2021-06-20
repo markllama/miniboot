@@ -1,6 +1,0 @@
-#!ipxe
-
-kernel http://{{ server.addr }}/coreos/kernel initrd=main coreos.live.rootfs_url=http://{{ server.addr }}/coreos/rootfs ignition.firstboot ignition.platform.id=metal ignition.config.url=http://{{ server.addr }}/config.ign systemd.unified_cgroup_hierarchy=0 console=ttyS1,115200n8
-initrd --name main http://{{ server.addr }}/coreos/initramfs
-
-boot

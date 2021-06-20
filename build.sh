@@ -11,7 +11,7 @@ IMAGE_NAME=$2
 MAINTAINER="Mark Lamourine <markllama@gmail.com>"
 
 REPO_RPMS=https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm
-RPMS=(dhcp-server tftp-server python3-pip python3-pyyaml)
+RPMS=(dhcp-server tftp-server python3-pip python3-pyyaml iproute ipcalc)
 SERVICES=(dhcpd tftp lighttpd)
 
 buildah from --name ${CONTAINER_NAME} ${BASE_IMAGE}
@@ -48,8 +48,15 @@ buildah run ${CONTAINER_NAME} mkdir /opt/config
 buildah config --volume /opt/config ${CONTAINER_NAME}
 buildah config --volume /var/www/lighttpd/coreos ${CONTAINER_NAME}
 
+buildah config --env INTERFACE=eno1
+
 buildah copy ${CONTAINER_NAME} startup.sh /opt/startup.sh
 buildah run ${CONTAINER_NAME} chmod 755 /opt/startup.sh
+
+buildah copy ${CONTAINER_NAME} net_yaml.sh /opt/net_yaml.sh
+buildah run ${CONTAINER_NAME} chmod 755 /opt/net_yaml.sh
+
+
 buildah config --cmd /opt/startup.sh ${CONTAINER_NAME}
 
 buildah commit ${CONTAINER_NAME} ${IMAGE_NAME}
