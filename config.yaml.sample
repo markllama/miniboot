@@ -1,0 +1,12 @@
+#
+client:
+  mac: xx.xx.xx.xx.xx.xx     # MAC address to respond to
+  address: nnn.nnn.nnn.nnn            # IP address to assign
+  console: ttyS1,115800n
+
+# user: core
+# mkpasswd --method=sha256crypt
+# cleartext: core
+password_hash: "$5$u9CuJv4BN4EXEJpT$t501.S9zr2YhlRtPOCrmYacjzrrdxLbOylS/MJdlDP0"
+# SSH public key
+public_key: "ssh-rsa ..."
