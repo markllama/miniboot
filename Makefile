@@ -1,18 +1,20 @@
 #!make
 
-IMAGE_NAME=quay.io/markllama/miniboot
-CONTAINER_NAME=miniboot-build
+IMAGE_REPO=quay.io
+REPO_USER=markllama
+IMAGE_NAME=miniboot
+BUILD_CONTAINER_NAME=miniboot-build
 INTERFACE=br-prov
 
-miniboot-oci.tgz: build
-	podman save --format oci-archive ${IMAGE_NAME} --output miniboot-oci.tgz
+$(IMAGE_NAME)-oci.tgz: build
+	podman save --format oci-archive ${IMAGE_NAME} --output $(IMAGE_NAME)-oci.tgz
 
 build: ipxe/src/bin/undionly.kpxe
-	buildah unshare ./build.sh $(CONTAINER_NAME) $(IMAGE_NAME)
+	buildah unshare ./build.sh $(BUILD_CONTAINER_NAME) $(IMAGE_NAME)
 
 clean:
 	-rm miniboot.tgz
-	-buildah delete $(CONTAINER_NAME)
+	-buildah delete $(BUILD_CONTAINER_NAME)
 	-podman rmi ${IMAGE_NAME}
 
 realclean: clean
@@ -37,8 +39,11 @@ stop:
 	-podman stop miniboot
 	-podman rm miniboot
 
+tag:
+	podman tag ${IMAGE_NAME} ${IMAGE_REPO}/${REPO_USER}/${IMAGE_NAME}
+
 push:
-	podman push ${IMAGE_NAME}
+	podman push $(IMAGE_REPO)/$(REPO_USER)/${IMAGE_NAME}
 
 ipxe/src/bin/undionly.kpxe:
 	mkdir -p bin

@@ -1,8 +1,8 @@
 #
-client:
-  mac: xx.xx.xx.xx.xx.xx     # MAC address to respond to
-  address: nnn.nnn.nnn.nnn            # IP address to assign
-  console: ttyS1,115800n
+clients: 
+  - mac: xx.xx.xx.xx.xx.xx     # MAC address to respond to
+    address: nnn.nnn.nnn.nnn            # IP address to assign
+    console: ttyS1,115800n
 
 # user: core
 # mkpasswd --method=sha256crypt

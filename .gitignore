@@ -9,4 +9,4 @@ f34
 config.yaml
 
 # Ignore the final container image
-miniboot-oci.tgz
+*oci.tgz
