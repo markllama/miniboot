@@ -1,4 +1,4 @@
 #!ipxe
-kernel http://{{ network.addr }}/{{ coreos.kernel }} initrd=main coreos.live.rootfs_url=http://{{ network.addr }}/{{ coreos.rootfs }} ignition.platform.id=metal ignition.firstboot ignition.config.url=http://{{ network.addr }}/config.ign console={{ client.console }}
+kernel http://{{ network.addr }}/{{ coreos.kernel }} initrd=main coreos.live.rootfs_url=http://{{ network.addr }}/{{ coreos.rootfs }} ignition.platform.id=metal ignition.firstboot ignition.config.url=http://{{ network.addr }}/config.ign console={{ console }}
 initrd --name main http://{{ network.addr }}/{{ coreos.initrd }}
 boot

@@ -86,10 +86,10 @@ subnet {{ network.base }} netmask {{ network.mask }} {
   option routers {{ network.gateway }};
 }
 
-{% for host in clients %}
+{%- for host in clients %}
 host  pxeclient-{{ host.mac | replace(":", "_") }} {
   hardware ethernet {{ host.mac }}; 
   fixed-address {{ host.address }};
   next-server {{ network.addr }};
 }
-{% endfor %}
+{% endfor -%}
