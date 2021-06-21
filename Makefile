@@ -33,7 +33,7 @@ run:
 	  --env INTERFACE=$(INTERFACE) \
 	  --volume $(shell pwd)/config.yaml:/opt/config.yaml \
 	  --volume $(shell pwd)/coreos:/var/www/lighttpd/coreos \
-	  ${IMAGE_NAME}
+	  $(IMAGE_REPO)/$(REPO_USER)/${IMAGE_NAME}
 
 stop:
 	-podman stop miniboot

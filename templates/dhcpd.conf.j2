@@ -87,7 +87,7 @@ subnet {{ network.base }} netmask {{ network.mask }} {
 }
 
 {% for host in clients %}
-host  pxeclient-{{ host.mac | replace(":", "_"}} {
+host  pxeclient-{{ host.mac | replace(":", "_") }} {
   hardware ethernet {{ host.mac }}; 
   fixed-address {{ host.address }};
   next-server {{ network.addr }};
