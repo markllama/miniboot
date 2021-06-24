@@ -1,14 +1,20 @@
-#
+# user: core
+# mkpasswd --method=sha256crypt
+# cleartext: core - replace with your value if desired
+password_hash: "$5$u9CuJv4BN4EXEJpT$t501.S9zr2YhlRtPOCrmYacjzrrdxLbOylS/MJdlDP0"
+
+# SSH public key
+public_key: "ssh-rsa ..."
+
+# Optional, if observing or logging in on the serial console
+console: ttyS1,115800n
+
+# The name of the interface to listen on
+interface: <required>
+
+# A list of MAC/IP address pairs for the clients to be booted 
+# - The IP addresses must be in an IP range on the interface above
 clients: 
   - mac: xx.xx.xx.xx.xx.xx     # MAC address to respond to
     address: nnn.nnn.nnn.nnn            # IP address to assign
 # ...
-
-console: ttyS1,115800n
-
-# user: core
-# mkpasswd --method=sha256crypt
-# cleartext: core
-password_hash: "$5$u9CuJv4BN4EXEJpT$t501.S9zr2YhlRtPOCrmYacjzrrdxLbOylS/MJdlDP0"
-# SSH public key
-public_key: "ssh-rsa ..."
