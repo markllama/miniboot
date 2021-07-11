@@ -1,5 +1,10 @@
 #!/bin/bash
 #
+if [ $# -gt 0 -a "$1" == "help" ] ; then
+    bash ./help.sh
+    exit 0
+fi
+
 # Place configuration files for dhcpd, pxelinux and ignition for CoreOS boot
 #
 # Make a copy of the provided config

@@ -47,6 +47,9 @@ buildah config --env INTERFACE=eno1
 buildah copy ${CONTAINER_NAME} startup.sh /opt/startup.sh
 buildah run ${CONTAINER_NAME} chmod 755 /opt/startup.sh
 
+buildah copy ${CONTAINER_NAME} help.sh /opt/help.sh
+buildah copy ${CONTAINER_NAME} help.sh /opt/help.sh
+
 buildah copy ${CONTAINER_NAME} net_yaml.sh /opt/net_yaml.sh
 buildah run ${CONTAINER_NAME} chmod 755 /opt/net_yaml.sh
 
