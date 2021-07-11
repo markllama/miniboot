@@ -54,7 +54,8 @@ buildah copy ${CONTAINER_NAME} net_yaml.sh /opt/net_yaml.sh
 buildah run ${CONTAINER_NAME} chmod 755 /opt/net_yaml.sh
 
 
-buildah config --cmd /opt/startup.sh ${CONTAINER_NAME}
+#buildah config --cmd /opt/startup.sh ${CONTAINER_NAME}
+buildah config --entrypoint '["/opt/startup.sh"]'
 
 buildah commit ${CONTAINER_NAME} ${IMAGE_NAME}
 
