@@ -1,4 +1,5 @@
 # Ignore emacs backups
+\#*
 *~
 
 # Ignore image files
