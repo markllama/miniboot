@@ -1,7 +1,11 @@
 #!/bin/bash
 #
-if [ $# -gt 0 -a "$1" == "help" ] ; then
-    bash ./help.sh
+if [ $# -gt 0 ] ; then
+    if [ "$1" == "help" ] ; then
+      bash /opt/help.sh "$2"
+    else
+      echo "only help is supported"
+    fi 
     exit 0
 fi
 

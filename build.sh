@@ -2,7 +2,7 @@
 #
 # This script uses buildah to compose a container image with a DHCP server
 #
-#set -x
+set -x
 
 CONTAINER_NAME=$1
 BASE_IMAGE=registry.access.redhat.com/ubi8/ubi
@@ -55,10 +55,8 @@ buildah run ${CONTAINER_NAME} chmod 755 /opt/net_yaml.sh
 
 
 #buildah config --cmd /opt/startup.sh ${CONTAINER_NAME}
-buildah config --entrypoint '["/opt/startup.sh"]'
+buildah config --entrypoint '["/opt/startup.sh"]' ${CONTAINER_NAME} 
 
 buildah commit ${CONTAINER_NAME} ${IMAGE_NAME}
 
 buildah unmount ${CONTAINER_NAME}
-
-
