@@ -1,10 +1,12 @@
-#!/bin/bash
+#!/bin/bash -x
 #
-if [ $# -gt 0 ] ; then
-    if [ "$1" == "help" ] ; then
-      bash /opt/help.sh "$2"
+set -x
+
+if [ $# -gt 1 ] ; then
+    if [ "$2" == "help" ] ; then
+      bash /opt/help.sh "$3"
     else
-      echo "only help is supported"
+      echo "only help is supported: $*"
     fi 
     exit 0
 fi
@@ -34,5 +36,19 @@ jinja2 /opt/templates/boot.ipxe.j2 /opt/config_full.yaml > /var/www/lighttpd/boo
 jinja2 /opt/templates/config.ign.j2 /opt/config_full.yaml > /var/www/lighttpd/config.ign
 
 
+function run_cmd() {
+    # Support docker run --init parameter which obsoletes the use of dumb-init,
+    # but support dumb-init for those that still use it without --init
+
+    local run
+    if [ -x "/dev/init" ]; then
+        run="exec /usr/bin/tini"
+    else
+        run="exec /usr/bin/dumb-init --"
+    fi
+
+    echo $run
+}
+
 # Finally start systemd
-exec /sbin/init
+/usr/sbin/init
