@@ -31,7 +31,6 @@ buildah run ${CONTAINER_NAME} \
         sed -i -e '/^ExecStart=/s/-C .*$/${THTTPD_OPTS}/' \
         /etc/systemd/system/multi-user.target.wants/thttpd.service
 
-buildah config --volume /etc/sysconfig/thttpd
 buildah config --volume /var/www/thttpd ${CONTAINER_NAME}
 
 buildah config --cmd '["/sbin/init"]' ${CONTAINER_NAME} 

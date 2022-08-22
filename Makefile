@@ -22,13 +22,18 @@ realclean: clean
 	cd ipxe/src ; make clean
 
 cli:
-	+podman run -it --privileged --name miniboot -p 8080:8080 \
+	+podman run -it --init --privileged --name miniboot -p 8080:8080 \
 	  --entrypoint=/bin/bash \
+	  --volume $(shell pwd)/thttpd:/etc/sysconfig/thttpd \
+	  --volume $(shell pwd)/data/www:/var/www/thttpd \
 	  $(IMAGE_REPO)/$(REPO_USER)/${IMAGE_NAME}
 
 run:
-	+podman run -d --privileged --name miniboot -p 8080:8080 \
+	+podman run -d --init --systemd=true --privileged --name miniboot -p 8080:8080 \
+	  --volume $(shell pwd)/thttpd:/etc/sysconfig/thttpd \
+	  --volume $(shell pwd)/data/www:/var/www/thttpd \
 	  $(IMAGE_REPO)/$(REPO_USER)/${IMAGE_NAME}
+
 
 stop:
 	-podman stop miniboot
