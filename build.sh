@@ -5,13 +5,15 @@
 set -x
 
 CONTAINER_NAME=$1
-BASE_IMAGE=registry.access.redhat.com/ubi8/ubi
+#BASE_IMAGE=registry.access.redhat.com/ubi8/ubi
+BASE_IMAGE=registry.fedoraproject.org/fedora-minimal:36
+DNF=microdnf
+
 IMAGE_NAME=$2
 
 MAINTAINER="Mark Lamourine <markllama@gmail.com>"
 
-REPO_RPMS=https://dl.fedoraproject.org/pub/epel/epel-release-latest-8.noarch.rpm
-RPMS=(dhcp-server tftp-server python3-pip python3-pyyaml iproute ipcalc)
+RPMS=(systemd dhcp-server tftp-server python3-pip python3-pyyaml iproute ipcalc lighttpd ipcalc)
 SERVICES=(dhcpd tftp lighttpd)
 
 buildah from --name ${CONTAINER_NAME} ${BASE_IMAGE}
@@ -19,10 +21,9 @@ buildah config --label maintainer="${MAINTAINER}" ${CONTAINER_NAME}
 
 buildah config --port 68/tcp,68/udp,69/tcp,69/udp ${CONTAINER_NAME}
 
-buildah run ${CONTAINER_NAME} dnf -y install ${REPO_RPMS}
 
-buildah run ${CONTAINER_NAME} dnf -y install ${RPMS[@]}
-buildah run ${CONTAINER_NAME} dnf -y install --enablerepo epel lighttpd tcpdump
+buildah run ${CONTAINER_NAME} ${DNF} -y install ${RPMS[@]}
+buildah run ${CONTAINER_NAME} ${DNF} -y install lighttpd tcpdump
 
 buildah run ${CONTAINER_NAME} pip3 install jinja2-cli
 
@@ -35,7 +36,7 @@ buildah add ${CONTAINER_NAME} ipxe/src/bin/undionly.kpxe /var/lib/tftpboot/undio
 
 buildah run ${CONTAINER_NAME} mkdir /var/www/lighttpd/coreos
 
-buildah run ${CONTAINER_NAME} dnf clean all
+buildah run ${CONTAINER_NAME} ${DNF} clean all
 
 buildah copy ${CONTAINER_NAME} templates /opt/templates
 buildah run ${CONTAINER_NAME} mkdir /opt/config
