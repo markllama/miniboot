@@ -22,14 +22,14 @@ realclean: clean
 	cd ipxe/src ; make clean
 
 cli:
-	+podman run -it --rm --privileged --init --name miniboot --net=host \
+	+podman run -it --privileged --init --name miniboot --net=host \
 	  --volume $(shell pwd)/config.yaml:/opt/config.yaml \
 	  --volume $(shell pwd)/coreos:/var/www/lighttpd/coreos \
 	  --entrypoint=/bin/bash \
 	  ${IMAGE_NAME}
 
 run:
-	+podman run -d --rm --privileged --init --name miniboot --net=host \
+	+podman run -d --privileged --init --name miniboot --net=host \
 	  --env INTERFACE=$(INTERFACE) \
 	  --volume $(shell pwd)/config.yaml:/opt/config.yaml \
 	  --volume $(shell pwd)/coreos:/var/www/lighttpd/coreos \
