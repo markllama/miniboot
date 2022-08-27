@@ -13,8 +13,8 @@ IMAGE_NAME=$2
 MAINTAINER="Mark Lamourine <markllama@gmail.com>"
 
 CURL_OPTS="--location --remote-name --output-dir /tmp"
-RPMS=(systemd thttpd tftp-server)
-SERVICES=(thttpd tftpd)
+RPMS=(systemd dhcp-server tftp-server thttpd)
+SERVICES=(dhcpd tftp thttpd)
 
 PXE_BINARIES=(ldlinux.c32  lpxelinux.0  memdisk  pxelinux.0)
 
@@ -22,8 +22,6 @@ buildah from --name ${CONTAINER_NAME} ${BASE_IMAGE}
 buildah config --label maintainer="${MAINTAINER}" ${CONTAINER_NAME}
 
 buildah run ${CONTAINER_NAME} ${DNF} -y install ${RPMS[@]}
-
-buildah run ${CONTAINER_NAME} /bin/systemctl enable thttpd
 
 # Set up PXE boot in TFTP server
 buildah run ${CONTAINER_NAME} ${DNF} -y install syslinux-tftpboot
@@ -34,11 +32,11 @@ done
 # Try ipxe instead
 buildah add ${CONTAINER_NAME} ipxe/src/bin/undionly.kpxe /var/lib/tftpboot/undionly.kpxe
 buildah run ${CONTAINER_NAME} ${DNF} -y remove syslinux-tftpboot
-buildah run ${CONTAINER_NAME} systemctl enable tftp
 
 buildah run ${CONTAINER_NAME} ${DNF} clean all
 
-#buildah run ${CONTAINER_NAME} systemctl enable thttpd
+buildah run ${CONTAINER_NAME} systemctl enable ${SERVICES[@]}
+
 buildah config --volume /var/www/thttpd ${CONTAINER_NAME}
 buildah config --volume /var/lib/tftpboot/pxelinux.cfg ${CONTAINER_NAME}
 
