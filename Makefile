@@ -24,9 +24,7 @@ realclean: clean
 cli:
 	+podman run -it --privileged --name miniboot --net=host \
 	  --entrypoint=/bin/bash \
-	  --volume $(shell pwd)/data/thttpd.conf:/etc/thttpd.conf \
-	  --volume $(shell pwd)/data/www:/var/www/thttpd \
-	  --volume $(shell pwd)/data/pxelinux.cfg:/var/lib/tftpboot/pxelinux.cfg \
+	  --volume $(shell pwd)/data/thttpd.conf:/data\
 	  $(IMAGE_REPO)/$(REPO_USER)/${IMAGE_NAME}
 
 run:
@@ -48,8 +46,8 @@ push:
 	podman push $(IMAGE_REPO)/$(REPO_USER)/${IMAGE_NAME}
 
 ipxe/src/bin/undionly.kpxe:
-	mkdir -p bin
 	cd ipxe/src ; make bin/undionly.kpxe
+
 
 coreos:
 	mkdir -p coreos

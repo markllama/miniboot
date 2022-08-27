@@ -9,7 +9,7 @@ function main() {
 
     eval "$(netspecs $1)"
     GATEWAY=$(ip route | grep default | cut -d' ' -f3)
-    DOMAIN=$(grep search /etc/resolv.conf | cut -d' ' -f2)
+    DOMAIN=$(grep '^search ' /etc/resolv.conf | cut -d' ' -f2)
     NAMESERVER=$(grep nameserver /etc/resolv.conf | head -1 | cut -d' ' -f2)
 
     cat <<EOF

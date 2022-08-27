@@ -5,6 +5,7 @@
 set -x
 
 CONTAINER_NAME=$1
+
 #BASE_IMAGE=registry.access.redhat.com/ubi8/ubi
 BASE_IMAGE=registry.fedoraproject.org/fedora-minimal:36
 DNF=microdnf
@@ -18,27 +19,49 @@ SERVICES=(dhcpd tftp thttpd)
 
 PXE_BINARIES=(ldlinux.c32  lpxelinux.0  memdisk  pxelinux.0)
 
+function buildah_run() {
+    buildah run ${CONTAINER_NAME} $*
+}
+
+function replace_with_link() {
+    local FILE=$1
+    local LINK=$2
+
+    buildah run ${CONTAINER_NAME} rm -rf ${FILE}
+    buildah run ${CONTAINER_NAME} ln -s ${FILE} ${LINK}
+}
+
+# ==================================================================================
+#
+# ==================================================================================
+
 buildah from --name ${CONTAINER_NAME} ${BASE_IMAGE}
 buildah config --label maintainer="${MAINTAINER}" ${CONTAINER_NAME}
 
-buildah run ${CONTAINER_NAME} ${DNF} -y install ${RPMS[@]}
+buildah_run ${DNF} -y install ${RPMS[@]}
 
 # Set up PXE boot in TFTP server
-buildah run ${CONTAINER_NAME} ${DNF} -y install syslinux-tftpboot
+buildah_run ${DNF} -y install syslinux-tftpboot
 for PXE_BIN in ${PXE_BINARIES[@]} ; do
-    buildah run ${CONTAINER_NAME} cp /tftpboot/${PXE_BIN} /var/lib/tftpboot
+    buildah_run cp /tftpboot/${PXE_BIN} /var/lib/tftpboot
 done
 
 # Try ipxe instead
 buildah add ${CONTAINER_NAME} ipxe/src/bin/undionly.kpxe /var/lib/tftpboot/undionly.kpxe
-buildah run ${CONTAINER_NAME} ${DNF} -y remove syslinux-tftpboot
+buildah_run ${DNF} -y remove syslinux-tftpboot
 
-buildah run ${CONTAINER_NAME} ${DNF} clean all
+buildah_run ${DNF} clean all
 
-buildah run ${CONTAINER_NAME} systemctl enable ${SERVICES[@]}
+buildah_run systemctl enable ${SERVICES[@]}
 
-buildah config --volume /var/www/thttpd ${CONTAINER_NAME}
-buildah config --volume /var/lib/tftpboot/pxelinux.cfg ${CONTAINER_NAME}
+buildah config --volume /data ${CONTAINER_NAME}
+
+# All of the input is mounted on /data
+# /etc/dhcp/dhcpd.conf -> /data/dhcpd.conf
+replace_with_link /etc/dhcp/dhcpd.conf /data/dhcpd.conf 
+replace_with_link /etc/thttpd.conf /data/thttpd.conf
+replace_with_link /var/lib/tftpboot/pxelinux.cfg -> /data/pxelinux.cfg
+replace_with_link /var/www/thttpd -> /data/www
 
 buildah config --cmd '["/usr/sbin/init"]' ${CONTAINER_NAME} 
 
