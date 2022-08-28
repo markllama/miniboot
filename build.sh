@@ -28,7 +28,7 @@ function replace_with_link() {
     local LINK=$2
 
     buildah run ${CONTAINER_NAME} rm -rf ${FILE}
-    buildah run ${CONTAINER_NAME} ln -s ${FILE} ${LINK}
+    buildah run ${CONTAINER_NAME} ln -s ${LINK} ${FILE}
 }
 
 # ==================================================================================
@@ -48,6 +48,8 @@ done
 
 # Try ipxe instead
 buildah add ${CONTAINER_NAME} ipxe/src/bin/undionly.kpxe /var/lib/tftpboot/undionly.kpxe
+buildah add ${CONTAINER_NAME} ipxe.efi /var/www/thttpd/ipxe.efi
+
 buildah_run ${DNF} -y remove syslinux-tftpboot
 
 buildah_run ${DNF} clean all
@@ -60,8 +62,8 @@ buildah config --volume /data ${CONTAINER_NAME}
 # /etc/dhcp/dhcpd.conf -> /data/dhcpd.conf
 replace_with_link /etc/dhcp/dhcpd.conf /data/dhcpd.conf 
 replace_with_link /etc/thttpd.conf /data/thttpd.conf
-replace_with_link /var/lib/tftpboot/pxelinux.cfg -> /data/pxelinux.cfg
-replace_with_link /var/www/thttpd -> /data/www
+replace_with_link /var/lib/tftpboot/pxelinux.cfg /data/pxelinux.cfg 
+replace_with_link /var/www/thttpd/coreos /data/www/coreos
 
 buildah config --cmd '["/usr/sbin/init"]' ${CONTAINER_NAME} 
 
