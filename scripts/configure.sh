@@ -8,50 +8,17 @@
 #
 # -------------------------------------------------------------------------------------------
 function main() {
-    echo "Generating the configuration files"
+    echo Compose miniboot config File
+    local CFG_FILE=$(mktmp --suffix .yaml /tmp/miniboot-XXXXXX)
+    cat config.yaml <$(bash scripts/net_yaml.sh br-data) > ${CFG_FILE}
 
-    echo "Generate network configuration"
+    mkdir -p data
+    jinja2 templates/dhcpd.conf.j2 ${CFG_FILE} > data/dhcpd.conf
 
-}
 
-# ------------------------------------------------------------------------------------------
-#
-# ------------------------------------------------------------------------------------------
-function generate_dhcpd_config() {
-    # DHCP config required variables
-    # network:
-    #   addr:
-    #
-    #   base:
-    #   mask:
-    #   gateway:
-    #
-    # dns:
-    #   domain:
-    #   nameserver:
-    #
-    # clients:
-    #   - mac:
-    #     addr:
-    #   ...
-    echo Generating DHCP server configuration
+    jinja2 templates/thttpd.conf.j2 ${CFG_FILE} > data/thttpd.conf
 
-    echo dhcpd.conf
-}
-
-function generate_tftp_files() {
-    echo Generating TFTP files
-
-    boot.ipxe
-    
-}
-
-function generate_http_files() {
-    echo Generating HTTP files
-
-    echo thttpd.conf
-
-    
+    rm ${CFG_FILE}
 }
 
 ############################################################################################
