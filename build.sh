@@ -48,7 +48,7 @@ done
 
 # Try ipxe instead
 buildah add ${CONTAINER_NAME} ipxe/src/bin/undionly.kpxe /var/lib/tftpboot/undionly.kpxe
-buildah add ${CONTAINER_NAME} ipxe.efi /var/www/thttpd/ipxe.efi
+buildah add ${CONTAINER_NAME} ipxe.efi /var/lib/tftpboot/ipxe.efi
 
 buildah_run ${DNF} -y remove syslinux-tftpboot
 
@@ -60,10 +60,10 @@ buildah config --volume /data ${CONTAINER_NAME}
 
 # All of the input is mounted on /data
 # /etc/dhcp/dhcpd.conf -> /data/dhcpd.conf
-replace_with_link /etc/dhcp/dhcpd.conf /data/dhcpd.conf 
-replace_with_link /etc/thttpd.conf /data/thttpd.conf
-replace_with_link /var/lib/tftpboot/pxelinux.cfg /data/pxelinux.cfg 
-replace_with_link /var/www/thttpd/coreos /data/www/coreos
+replace_with_link /etc/dhcp/dhcpd.conf /opt/dhcpd.conf 
+replace_with_link /etc/thttpd.conf /opt/thttpd.conf
+replace_with_link /var/lib/tftpboot/pxelinux.cfg /opt/pxelinux.cfg 
+replace_with_link /var/www/thttpd /opt/www
 
 buildah config --cmd '["/usr/sbin/init"]' ${CONTAINER_NAME} 
 

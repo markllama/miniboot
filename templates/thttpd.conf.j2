@@ -6,10 +6,10 @@ user=thttpd         # default = nobody
 logfile=/var/log/thttpd.log
 pidfile=/var/run/thttpd.pid
 # This section _documents_ defaults in effect
-# port={{ http.port | default('80') }}
+port={{ http.port | default('80') }}
 # nosymlink         # default = !chroot
 # novhost
 # nocgipat
 # nothrottles
-host={{ http.server | default('0.0.0.0') }}
+host={{ network.addr | default('0.0.0.0') }}
 # charset=iso-8859-1
