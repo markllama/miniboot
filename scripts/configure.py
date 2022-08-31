@@ -65,9 +65,10 @@ def query_network(interface):
     # get the base address for the network interface
     network['base'] = str(ipaddress.ip_network(
         netaddr['addr'] + '/' + netaddr['netmask'], strict=False).network_address)
-    
-    r = pyroute2.IPRoute().route('get', dst='8.8.8.8')[0]['attrs']
-    network['gate'] = [x[1] for x in r if x[0] == 'RTA_GATEWAY'][0]
+
+    network['gate'] = '.'.join(network['base'].split('.')[0:3] + ['1'])
+    #r = pyroute2.IPRoute().route('get', dst='8.8.8.8')[0]['attrs']
+    #network['gate'] = [x[1] for x in r if x[0] == 'RTA_GATEWAY'][0]
 
     return network
 
@@ -79,9 +80,9 @@ def query_resolver():
 
     return res
 
-    
-
-
+#
+#
+#
 service_templates = ('dhcpd.conf', 'thttpd.conf')
 host_templates = ('boot.ipxe', 'config.ign')
 
