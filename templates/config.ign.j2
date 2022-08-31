@@ -4,13 +4,15 @@
   },
   "passwd": {
     "users": [
+{% for user in users %}
       {
-        "name": "core",
-        "passwordHash": "{{ password_hash }}",
+        "name": "{{ user.name }}",
+        "passwordHash": "{{ user.password_hash }}",
         "sshAuthorizedKeys": [
-          "{{ public_key }}"
+          "{{ user.public_key }}"
         ]
       }
+{% endfor %}
     ]
   },
   "storage": {
@@ -18,7 +20,7 @@
       {
         "path": "/etc/hostname",
         "contents": {
-          "source": "data:,{{ clients[client_number].hostnamem }}%0A"
+          "source": "data:,{{ clients[client_number].name }}%0A"
         },
         "mode": 420
       },
