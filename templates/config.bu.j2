@@ -1,0 +1,29 @@
+---
+variant: fcos
+version: 1.4.0
+
+kernel_arguments:
+  should_exist: ["console=ttyS1,115200n8"]
+  should_not_exist: ["rhgb", "quiet", "console=ttyS0,115200n8"]
+
+storage:
+  disks:
+  - device: /dev/sda
+    wipe_table: true
+
+  files:
+  # Set the system hostname - FQDN
+  - path: /etc/hostname
+    contents:
+      inline: {{ clients[(client_number | int)].name }}
+
+passwd:
+  users:
+  {% for user in users %}
+  - name: {{ user.name }}
+    password_hash: {{ user.password_hash }}
+    ssh_authorized_keys:
+        - {{ user.public_key }}  
+  {% endfor %}
+
+
