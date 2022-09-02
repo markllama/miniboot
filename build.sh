@@ -60,9 +60,8 @@ buildah config --volume /data ${CONTAINER_NAME}
 
 # All of the input is mounted on /data
 # /etc/dhcp/dhcpd.conf -> /data/dhcpd.conf
-replace_with_link /etc/dhcp/dhcpd.conf /opt/dhcpd.conf 
-replace_with_link /etc/thttpd.conf /opt/thttpd.conf
-replace_with_link /var/lib/tftpboot/pxelinux.cfg /opt/pxelinux.cfg 
+replace_with_link /etc/dhcp/dhcpd.conf /opt/etc/dhcpd.conf 
+replace_with_link /etc/thttpd.conf /opt/etc/thttpd.conf
 replace_with_link /var/www/thttpd /opt/www
 
 buildah config --cmd '["/usr/sbin/init"]' ${CONTAINER_NAME} 

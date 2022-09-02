@@ -50,7 +50,18 @@ ipxe/src/bin/undionly.kpxe:
 ipxe.efi:
 	curl -O http://boot.ipxe.org/ipxe.efi
 
-data/www/coreos:
+data/etc:
+	mkdir -p data/etc
+
+data/etc/dhcpd.conf: data templates/dhcpd.conf.j2 config_full.yaml
+	jinja2 templates/dhcpd.conf.j2 config_full.yaml > data/etc/dhcpd.conf
+
+data/etc/thttpd.conf: data templates/thttpd.conf.j2 config_full.yaml
+	jinja2 templates/thttpd.conf.j2 config_full.yaml > data/etc/thttpd.conf
+
+
+
+data/www/coreos: data
 	mkdir -p data/www/coreos
 	cd data/www/coreos ; \
 	podman run --privileged --pull=always --rm -v .:/data -w /data \
@@ -63,4 +74,3 @@ ports:
 	firewall-cmd --add-service dhcp
 	firewall-cmd --add-service tftp
 	firewall-cmd --add-service http
-
