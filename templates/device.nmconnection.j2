@@ -1,0 +1,17 @@
+[connection]
+id={{ nic.name }}
+type=ethernet
+autoconnect-priority=-999
+interface-name={{ nic.name }}
+
+[ethernet]
+
+[ipv4]
+method=manual
+address1={{ nic.ipv4_address }}
+
+[ipv6]
+addr-gen-mode=stable-privacy
+method=disabled
+
+[proxy]
