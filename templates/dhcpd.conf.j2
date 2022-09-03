@@ -79,14 +79,18 @@ subnet {{ network.base }} netmask {{ network.mask }} {
   option routers {{ network.gate }} ;
 }
 
-{%- for host in clients %}
-host pxeclient-{{ host.name }} {
-  hardware ethernet {{ host.mac | lower }} ;
-  fixed-address {{ host.address }} ;
+{%- for node in nodes %}
+host pxeclient-{{ node.hostname }} {
+{%- for nic in node.nics %}
+{%- if nic.name == node.provisioning_nic %}    
+  hardware ethernet {{ nic.mac_address | lower }} ;
+  fixed-address {{ nic.ipv4_address }} ;
+{%- endif %}
+{%- endfor %}
   next-server {{ network.addr }} ;
   
   if exists user-class and option user-class = "iPXE" {
-    filename "http://{{ network.addr }}:{{ http.port }}/{{ host.name }}-boot.ipxe";
+    filename "http://{{ network.addr }}:{{ http.port }}/{{ node.hostname }}-boot.ipxe";
   } elsif option client-architecture = 00:00 {
     filename "undionly.kpxe";
   } else {

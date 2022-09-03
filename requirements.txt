@@ -1,3 +1,5 @@
 dnspython
 netifaces
 pyroute2
+yq
+jq

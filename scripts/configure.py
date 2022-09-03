@@ -97,23 +97,20 @@ if __name__ == "__main__":
     config['network'] = query_network(config['interface'])
     config['dns'] = query_resolver()
                                       
-    #print(yaml.dump(config))
+    print(yaml.dump(config))
 
     # Generate service configuration files
-    for template_file in service_templates:
-        template = jinja2.Template(open(os.path.join(opts.template_dir, template_file + '.j2')).read())
-        rendered_file = open(os.path.join(opts.output_dir, template_file), 'w')
-        rendered_file.write(template.render(config))
-        rendered_file.close()
+    # for template_file in service_templates:
+    #     template = jinja2.Template(open(os.path.join(opts.template_dir, template_file + '.j2')).read())
+    #     rendered_file = open(os.path.join(opts.output_dir, template_file), 'w')
+    #     rendered_file.write(template.render(config))
+    #     rendered_file.close()
                              
-    for template_file in host_templates:
-        template = jinja2.Template(open(os.path.join(opts.template_dir, template_file + '.j2')).read())
-        for i, host in enumerate(config['clients']):
-            rendered_file = open(os.path.join(opts.output_dir, "www", f"{host['name']}-{template_file}"), 'w')
-            rendered_file.write(template.render(config, client_number=i))
-            rendered_file.close()
-            
+    # for template_file in host_templates:
+    #     template = jinja2.Template(open(os.path.join(opts.template_dir, template_file + '.j2')).read())
+    #     for i, host in enumerate(config['clients']):
+    #         rendered_file = open(os.path.join(opts.output_dir, "www", f"{host['name']}-{template_file}"), 'w')
+    #         rendered_file.write(template.render(config, client_number=i))
+    #         rendered_file.close()
 
     #print(dhcp_template.render(config))
-
-    

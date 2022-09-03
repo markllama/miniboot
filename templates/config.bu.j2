@@ -15,7 +15,7 @@ storage:
   # Set the system hostname - FQDN
   - path: /etc/hostname
     contents:
-      inline: {{ clients[(client_number | int)].name }}
+      inline: {{ nodes[(node_number | int)].hostname }}
 
 passwd:
   users:
@@ -25,5 +25,3 @@ passwd:
     ssh_authorized_keys:
         - {{ user.public_key }}  
   {% endfor %}
-
-
