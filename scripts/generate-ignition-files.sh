@@ -1,19 +1,24 @@
 #!/bin/bash
 
 : ${CONFIG_FILE=config_full.yaml}
+: ${IPXE_TEMPLATE=templates/boot.ipxe.j2}
 : ${BUTANE_TEMPLATE=templates/config.bu.j2}
-: ${FCOS_DIR=data/www/fcos}
-
+: ${NMCONNECTION_TEMPLATE=templates/device.nmconnection.j2}
+: ${IPXE_DIR=data/www/ipxe}
+: ${FCOS_DIR=data/fcos}
 
 function main() {
 
     local NODE_INDEX
     
+    mkdir -p ${IPXE_DIR}
     mkdir -p ${FCOS_DIR}
     for NODE_INDEX in $(seq_nodes) ; do
         local NODE_NAME=$(node_hostname ${NODE_INDEX})
+        generate_ipxe ${NODE_INDEX} ${IPXE_DIR}/${NODE_NAME}.ipxe
         generate_ignition ${NODE_INDEX}  ${FCOS_DIR}/${NODE_NAME}.ign
-        generate_custom_initrd ${NODE_NAME} data/www/fcos data/www/coreos
+        generate_nmconnection ${NODE_INDEX} ${FCOS_DIR}/${NODE_NAME}.nmconnection
+        generate_custom_initrd ${NODE_NAME} ${FCOS_DIR} data/www/coreos
     done
 }
 
@@ -30,6 +35,11 @@ function node_hostname() {
     yq --raw-output ".nodes[${NODE_NUMBER}].hostname" < ${CONFIG_FILE}
 }
 
+function transform_ipxe() {
+    local NODE_NUMBER=$1
+    jinja2 ${IPXE_TEMPLATE} ${CONFIG_FILE} -D node_number=${NODE_NUMBER}
+}
+
 function transform_butane() {
     local NODE_NUMBER=$1
 
@@ -38,9 +48,14 @@ function transform_butane() {
 
 function transform_nmconnection() {
     local NODE_NUMBER=$1
-    jinja2 ${NMINTERFACE_TEMPLATE} ${CONFIG_FILE} -D node_number=${NODE_NUMBER}
+    jinja2 ${NMCONNECTION_TEMPLATE} ${CONFIG_FILE} -D node_number=${NODE_NUMBER}
 }
 
+function generate_ipxe() {
+    local NODE_INDEX=$1
+    local IPXE_FILE=$2
+    transform_ipxe ${NODE_INDEX} > ${IPXE_FILE}
+}
 function generate_ignition() {
     local NODE_INDEX=$1
     local IGNITION_FILE=$2
@@ -56,6 +71,12 @@ function generate_ignition() {
     rm ${BUTANE_FILE}
 }
 
+function generate_nmconnection() {
+    local NODE_INDEX=$1
+    local NMCONNECTION_FILE=$2
+    transform_nmconnection ${NODE_INDEX} >${NMCONNECTION_FILE}
+}
+
 function initrd_image() {
     local IMAGE_DIR=$1
     ls ${IMAGE_DIR}/fedora-coreos-*-live-initramfs.x86_64.img | sort | tail -1
@@ -63,15 +84,15 @@ function initrd_image() {
 
 function generate_custom_initrd() {
     local NODE_NAME=$1
-    local IGNITION_DIR=$2
+    local FCOS_DIR=$2
     local IMAGE_DIR=$3
 
     local IMAGE_FILE=${IMAGE_DIR}/${NODE_NAME}-initrd.img
-    [ -f ${IMAGE_FILE}] && rm -f ${IMAGE_FILE}
+    [ -f ${IMAGE_FILE} ] && rm -f ${IMAGE_FILE}
     coreos-installer pxe customize \
       --dest-device /dev/sda \
-      --dest-ignition ${IGNITION_DIR}/${NODE_NAME}.ign \
-      --network-keyfile static-ip.nmconnection \
+      --dest-ignition ${FCOS_DIR}/${NODE_NAME}.ign \
+      --network-keyfile ${FCOS_DIR}/${NODE_NAME}.nmconnection \
       -o ${IMAGE_FILE} \
       $(initrd_image ${IMAGE_DIR})
     chmod a+r ${IMAGE_FILE}

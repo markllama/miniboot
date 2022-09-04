@@ -1,3 +1,4 @@
+{% set nic = nodes[node_number| int].nics[0] %}
 [connection]
 id={{ nic.name }}
 type=ethernet
@@ -9,6 +10,8 @@ interface-name={{ nic.name }}
 [ipv4]
 method=manual
 address1={{ nic.ipv4_address }}
+gateway={{ network.gate }}
+dns={{ dns.nameserver }}
 
 [ipv6]
 addr-gen-mode=stable-privacy
