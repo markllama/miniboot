@@ -8,8 +8,52 @@ kernel_arguments:
 
 storage:
   disks:
-  - device: /dev/sda
+
+  # - device: /dev/sda
+  #   wipe_table: true
+  #   # Device       Start        End    Sectors  Size Type
+  #   # /dev/sda1     2048       4095       2048    1M BIOS boot
+  #   # /dev/sda2     4096     264191     260096  127M EFI System
+  #   # /dev/sda3   264192    1050623     786432  384M Linux filesystem
+  #   # /dev/sda4  1050624 3906228190 3905177567  1.8T Linux filesystem
+  #   partitions:
+  #   - number: 1
+  #     #label: bios
+  #     start_mib: 2048
+  #     size_mib: 2048
+  #     wipe_partition_label: true
+  #   - number: 2
+  #     label: EFI-SYSTEM
+  #     start_mib: 4096
+  #     size_mib: 260096
+  #     wipe_partition_label: true
+  #   - number: 3
+  #     label: boot
+  #     start_mib: 264192
+  #     size_mib: 1050623
+  #     wipe_partition_label: true
+  #   - number: 4
+  #     label: root
+  #     start_mib: 1050624
+  #     size_mib: 3906228190
+  #     wipe_partition_label: true
+    
+  - device: /dev/sdb
     wipe_table: true
+    partitions:
+    - number: 1
+      label: data
+
+#  filesystems:
+#  - path: /data
+#    device: /dev/disk/by-partlabel/data
+#    format: xfs
+#    wipe_filesystem: true
+#    label: data
+#    with_mount_unit: true
+
+#  directories:
+#  - path: /data
 
   files:
   # Set the system hostname - FQDN

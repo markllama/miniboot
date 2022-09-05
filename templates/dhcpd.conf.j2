@@ -90,7 +90,7 @@ host pxeclient-{{ node.hostname }} {
   next-server {{ network.addr }} ;
   
   if exists user-class and option user-class = "iPXE" {
-    filename "http://{{ network.addr }}:{{ http.port }}/{{ node.hostname }}-boot.ipxe";
+    filename "http://{{ network.addr }}:{{ http.port }}/ipxe/{{ node.hostname }}.ipxe";
   } elsif option client-architecture = 00:00 {
     filename "undionly.kpxe";
   } else {
