@@ -35,6 +35,11 @@ function node_hostname() {
     yq --raw-output ".nodes[${NODE_NUMBER}].hostname" < ${CONFIG_FILE}
 }
 
+function node_architecture() {
+    local NODE_NUMBER=$1
+    yq --raw-output ".nodes[${NODE_NUMBER}].arch" < ${CONFIG_FILE}
+}
+
 function transform_ipxe() {
     local NODE_NUMBER=$1
     jinja2 ${IPXE_TEMPLATE} ${CONFIG_FILE} -D node_number=${NODE_NUMBER}
@@ -79,22 +84,24 @@ function generate_nmconnection() {
 
 function initrd_image() {
     local IMAGE_DIR=$1
-    ls ${IMAGE_DIR}/fedora-coreos-*-live-initramfs.x86_64.img | sort | tail -1
+    local ARCH=$2
+    ls ${IMAGE_DIR}/fedora-coreos-*-live-initramfs.${ARCH}.img | sort | tail -1
 }
 
 function generate_custom_initrd() {
     local NODE_NAME=$1
-    local FCOS_DIR=$2
-    local IMAGE_DIR=$3
+    local NODE_ARCH=$2
+    local FCOS_DIR=$3
+    local IMAGE_DIR=$4
 
-    local IMAGE_FILE=${IMAGE_DIR}/${NODE_NAME}-initrd.img
+    local IMAGE_FILE=${IMAGE_DIR}/${NODE_NAME}-initrd${NODE_ARCH}.img
     [ -f ${IMAGE_FILE} ] && rm -f ${IMAGE_FILE}
     coreos-installer pxe customize \
       --dest-device /dev/sda \
       --dest-ignition ${FCOS_DIR}/${NODE_NAME}.ign \
       --network-keyfile ${FCOS_DIR}/${NODE_NAME}.nmconnection \
       -o ${IMAGE_FILE} \
-      $(initrd_image ${IMAGE_DIR})
+      $(initrd_image ${IMAGE_ARCH} ${IMAGE_DIR})
     chmod a+r ${IMAGE_FILE}
 }
 

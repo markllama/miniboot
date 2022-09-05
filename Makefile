@@ -78,11 +78,13 @@ data/www/pxe: data
 data/www/coreos: data
 	mkdir -p data/www/coreos
 	cd data/www/coreos ; \
-	${PODMAN} run --privileged --pull=always --rm -v .:/data -w /data \
-	  quay.io/coreos/coreos-installer:release download -f pxe ; \
-	ln -s fedora-coreos-*-live-kernel-x86_64 kernel ; \
-	ln -s fedora-coreos-*-live-initramfs.x86_64.img initrd.img ; \
-	ln -s fedora-coreos-*-live-rootfs.x86_64.img rootfs.img
+	for ARCH in x86_64 aarch64 ; do \
+	  ${PODMAN} run --privileged --pull=always --rm -v .:/data -w /data \
+	    quay.io/coreos/coreos-installer:release download -a ${ARCH} -f pxe ; \
+	  ln -s fedora-coreos-*-live-kernel-${ARCH} kernel-${ARCH} ; \
+	  ln -s fedora-coreos-*-live-initramfs.${ARCH}.img initrd-${ARCH}.img ; \
+	  ln -s fedora-coreos-*-live-rootfs.${ARCH}.img rootfs-${ARCH}.img ; \
+	done
 
 ports:
 	firewall-cmd --add-service dhcp
