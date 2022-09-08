@@ -18,7 +18,7 @@ function main() {
         generate_ipxe ${NODE_INDEX} ${IPXE_DIR}/${NODE_NAME}.ipxe
         generate_ignition ${NODE_INDEX}  ${FCOS_DIR}/${NODE_NAME}.ign
         generate_nmconnection ${NODE_INDEX} ${FCOS_DIR}/${NODE_NAME}.nmconnection
-        generate_custom_initrd ${NODE_NAME} ${FCOS_DIR} data/www/coreos
+        generate_custom_initrd ${NODE_NAME} $(node_architecture ${NODE_INDEX}) ${FCOS_DIR} data/www/coreos
     done
 }
 
@@ -94,14 +94,15 @@ function generate_custom_initrd() {
     local FCOS_DIR=$3
     local IMAGE_DIR=$4
 
-    local IMAGE_FILE=${IMAGE_DIR}/${NODE_NAME}-initrd${NODE_ARCH}.img
+    local IMAGE_FILE=${IMAGE_DIR}/${NODE_NAME}-initrd-${NODE_ARCH}.img
     [ -f ${IMAGE_FILE} ] && rm -f ${IMAGE_FILE}
     coreos-installer pxe customize \
       --dest-device /dev/sda \
       --dest-ignition ${FCOS_DIR}/${NODE_NAME}.ign \
       --network-keyfile ${FCOS_DIR}/${NODE_NAME}.nmconnection \
+      --post-install scripts/install-ansible.sh \
       -o ${IMAGE_FILE} \
-      $(initrd_image ${IMAGE_ARCH} ${IMAGE_DIR})
+      $(initrd_image ${IMAGE_DIR} ${NODE_ARCH})
     chmod a+r ${IMAGE_FILE}
 }
 

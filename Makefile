@@ -80,10 +80,11 @@ data/www/coreos: data
 	cd data/www/coreos ; \
 	for ARCH in x86_64 aarch64 ; do \
 	  ${PODMAN} run --privileged --pull=always --rm -v .:/data -w /data \
-	    quay.io/coreos/coreos-installer:release download -a ${ARCH} -f pxe ; \
-	  ln -s fedora-coreos-*-live-kernel-${ARCH} kernel-${ARCH} ; \
-	  ln -s fedora-coreos-*-live-initramfs.${ARCH}.img initrd-${ARCH}.img ; \
-	  ln -s fedora-coreos-*-live-rootfs.${ARCH}.img rootfs-${ARCH}.img ; \
+	    quay.io/coreos/coreos-installer:release download -a $${ARCH} -f pxe ; \
+	  VERSION=$$(ls fedora-coreos-*-live-kernel-$${ARCH} | cut -d- -f3) ; \
+	  ln -s fedora-coreos-$${VERSION}-live-kernel-$${ARCH} kernel-$${ARCH} ; \
+	  ln -s fedora-coreos-$${VERSION}-live-initramfs.$${ARCH}.img initrd-$${ARCH}.img ; \
+	  ln -s fedora-coreos-$${VERSION}-live-rootfs.$${ARCH}.img rootfs-$${ARCH}.img ; \
 	done
 
 ports:

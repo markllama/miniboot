@@ -83,8 +83,9 @@ subnet {{ network.base }} netmask {{ network.mask }} {
 host pxeclient-{{ node.hostname }} {
 {%- for nic in node.nics %}
 {%- if nic.name == node.provisioning_nic %}    
+{%- set ipv4_address = nic.ipv4_address.split('/')[0] %}
   hardware ethernet {{ nic.mac_address | lower }} ;
-  fixed-address {{ nic.ipv4_address }} ;
+  fixed-address {{ ipv4_address }} ;
 {%- endif %}
 {%- endfor %}
   next-server {{ network.addr }} ;

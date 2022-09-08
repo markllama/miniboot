@@ -1,3 +1,4 @@
+{% set node = nodes[(node_number | int)] }
 ---
 variant: fcos
 version: 1.4.0
@@ -37,13 +38,15 @@ storage:
   #     start_mib: 1050624
   #     size_mib: 3906228190
   #     wipe_partition_label: true
-    
+
+{% if nodes[(node_number | int)].arch == 'x86_64' %}
   - device: /dev/sdb
     wipe_table: true
     partitions:
     - number: 1
       label: data
-
+{% endif %}
+  
 #  filesystems:
 #  - path: /data
 #    device: /dev/disk/by-partlabel/data
@@ -80,12 +83,12 @@ storage:
       inline: |
         [kubernetes]
         name=Kubernetes
-        baseurl=https://packages.cloud.google.com/yum/repos/kubernetes-el7-x86_64
+        baseurl=https://packages.cloud.google.com/yum/repos/kubernetes-el7-{{ nodes[(node_number | int)].arch }}
         enabled=1
-        gpgcheck=1
-        repo_gpgcheck=1
-        gpgkey=https://packages.cloud.google.com/yum/doc/yum-key.gpg
-        https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
+        gpgcheck=0
+        #gpgkey=https://packages.cloud.google.com/yum/doc/yum-key.gpg
+        repo_gpgcheck=0
+        # repo_gpgkey=https://packages.cloud.google.com/yum/doc/rpm-package-key.gpg
   # configuring automatic loading of br_netfilter on startup
   - path: /etc/modules-load.d/br_netfilter.conf
     mode: 0644
