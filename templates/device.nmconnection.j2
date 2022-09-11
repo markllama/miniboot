@@ -12,7 +12,9 @@ method=manual
 address1={{ nic.ipv4_address }}
 gateway={{ network.gate }}
 dns={{ dns.nameserver }}
-
+{%- if network.routes is defined %}
+routes={{ network.routes }}
+{%- endif %}
 [ipv6]
 addr-gen-mode=stable-privacy
 method=disabled

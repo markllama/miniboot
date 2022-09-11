@@ -100,7 +100,6 @@ function generate_custom_initrd() {
       --dest-device /dev/sda \
       --dest-ignition ${FCOS_DIR}/${NODE_NAME}.ign \
       --network-keyfile ${FCOS_DIR}/${NODE_NAME}.nmconnection \
-      --post-install scripts/install-ansible.sh \
       -o ${IMAGE_FILE} \
       $(initrd_image ${IMAGE_DIR} ${NODE_ARCH})
     chmod a+r ${IMAGE_FILE}

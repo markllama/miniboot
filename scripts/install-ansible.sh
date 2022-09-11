@@ -1,3 +1,3 @@
 #!/bin/bash
 
-rpm-ostree install --idempotent ansible
+rpm-ostree install ansible

@@ -1,4 +1,4 @@
-{% set node = nodes[(node_number | int)] }
+{%- set node = nodes[(node_number | int)] %}
 ---
 variant: fcos
 version: 1.4.0
@@ -8,8 +8,8 @@ kernel_arguments:
   should_not_exist: ["rhgb", "quiet", "console=ttyS0,115200n8"]
 
 storage:
+{% if nodes[(node_number | int)].arch == 'x86_64' %}
   disks:
-
   # - device: /dev/sda
   #   wipe_table: true
   #   # Device       Start        End    Sectors  Size Type
@@ -39,12 +39,20 @@ storage:
   #     size_mib: 3906228190
   #     wipe_partition_label: true
 
-{% if nodes[(node_number | int)].arch == 'x86_64' %}
   - device: /dev/sdb
     wipe_table: true
     partitions:
     - number: 1
-      label: data
+      label: containers
+
+  filesystems:
+  - path: /var/lib/containers
+    device: /dev/disk/by-partlabel/containers
+    format: xfs
+    wipe_filesystem: true
+    label: containers
+    with_mount_unit: true
+
 {% endif %}
   
 #  filesystems:
@@ -103,6 +111,37 @@ storage:
       inline: |
         net.bridge.bridge-nf-call-iptables=1
           net.ipv4.ip_forward=1
+
+  - path: /usr/local/bin/install-ansible
+    mode: 0744
+    overwrite: true
+    contents:
+      inline: |
+        #!/bin/bash
+        rpm-ostree install ansible || exit 2
+        rm /usr/local/bin/install-ansible
+        rm /etc/systemd/system/multi-user.target.wants/install-ansible.service
+        systemctl reboot
+        
+systemd:
+  units:
+  - name: install-ansible.service
+    enabled: true
+    contents: |
+      [Unit]
+      Description=Install Ansible before first login and reboot
+      Before=systemd-logind.target
+      Wants=network-online.target
+      After=network-online.target
+      ConditionPathExists=!/usr/bin/ansible
+
+      [Service]
+      Type=oneshot
+      ExecStart=/usr/local/bin/install-ansible
+      RemainAfterExit=yes
+
+      [Install]
+      WantedBy=multi-user.target
 
 passwd:
   users:

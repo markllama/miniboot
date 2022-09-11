@@ -80,6 +80,7 @@ subnet {{ network.base }} netmask {{ network.mask }} {
 }
 
 {%- for node in nodes %}
+{%- if node.provisioning_nic is defined %}
 host pxeclient-{{ node.hostname }} {
 {%- for nic in node.nics %}
 {%- if nic.name == node.provisioning_nic %}    
@@ -98,4 +99,5 @@ host pxeclient-{{ node.hostname }} {
     filename "ipxe.efi";
   }
 }
-{% endfor %}
+{%- endif %}
+{%- endfor %}
