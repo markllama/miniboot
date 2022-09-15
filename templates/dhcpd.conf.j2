@@ -80,17 +80,15 @@ subnet {{ network.base }} netmask {{ network.mask }} {
 }
 
 {%- for node in nodes %}
-{%- if node.provisioning_nic is defined %}
+
 host pxeclient-{{ node.hostname }} {
 {%- for nic in node.nics %}
-{%- if nic.name == node.provisioning_nic %}    
 {%- set ipv4_address = nic.ipv4_address.split('/')[0] %}
   hardware ethernet {{ nic.mac_address | lower }} ;
   fixed-address {{ ipv4_address }} ;
-{%- endif %}
-{%- endfor %}
+{%- endfor %}  
+{%- if node.provisioning_nic is defined %}
   next-server {{ network.addr }} ;
-  
   if exists user-class and option user-class = "iPXE" {
     filename "http://{{ network.addr }}:{{ http.port }}/ipxe/{{ node.hostname }}.ipxe";
   } elsif option client-architecture = 00:00 {
@@ -98,6 +96,6 @@ host pxeclient-{{ node.hostname }} {
   } else {
     filename "ipxe.efi";
   }
-}
 {%- endif %}
+}
 {%- endfor %}

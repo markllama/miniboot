@@ -94,7 +94,7 @@ if __name__ == "__main__":
     # Load the user configuration file
     config = yaml.load(open(opts.config_file), yaml.Loader)
 
-    config['network'] = query_network(config['interface'])
+    config['network'] = query_network(config['server']['dhcp_interface'])
     config['dns'] = query_resolver()
                                       
     print(yaml.dump(config))
