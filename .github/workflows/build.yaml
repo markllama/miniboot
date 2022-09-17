@@ -1,0 +1,31 @@
+---
+#
+# Build a podman container and push it to quay.io
+#
+name: build_image
+
+on:
+  push:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+
+  steps:
+    - name: Checkout current repository
+      uses: actions/checkout@v2
+
+    # This process described by Hitesh Jethva, June 12, 2021
+    # https://www.atlantic.net/dedicated-server-hosting/how-to-install-and-use-podman-on-ubuntu-20-04/
+    - name: install podman
+      run: |
+        apt-get install curl wget gnupg2 -y
+        source /etc/os-release
+        sh -c "echo 'deb http://download.opensuse.org/repositories/devel:/kubic:/libcontainers:/stable/xUbuntu_${VERSION_ID}/ /' > /etc/apt/sources.list.d/devel:kubic:libcontainers:stable.list"
+        wget -nv https://download.opensuse.org/repositories/devel:kubic:libcontainers:stable/xUbuntu_${VERSION_ID}/Release.key -O- | apt-key add -
+        apt-get update -qq -y
+        apt-get -qq --yes install podman
+        podman --version
+
+    
