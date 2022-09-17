@@ -29,4 +29,4 @@ jobs:
 
     - name: install buildah
       run: |
-        sudo apt-get --qq --yes install buildah
+        sudo apt-get -qq --yes install buildah
