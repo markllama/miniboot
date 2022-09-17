@@ -1,6 +1,0 @@
-#!ipxe
-{%- set arch = nodes[node_number | int].arch %}
-{%- set hostname = nodes[node_number | int].hostname %}
-kernel http://{{ network.addr }}:{{ http.port }}/coreos/kernel-{{ arch }} initrd=main coreos.live.rootfs_url=http://{{ network.addr }}:{{ http.port }}/coreos/rootfs-{{ arch }}.img ignition.platform.id=metal ignition.firstboot console=ttyS1,115200n8
-initrd --name main http://{{ network.addr }}:{{ http.port }}/coreos/{{ hostname }}-initrd-{{ arch }}.img
-boot

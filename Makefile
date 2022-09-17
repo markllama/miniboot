@@ -1,93 +1,57 @@
 #!make
 
-IMAGE_REPO=quay.io
-REPO_USER=markllama
 IMAGE_NAME=miniboot
+TARBALL=${IMAGE_NAME}-oci.tgz
 BUILD_CONTAINER_NAME=miniboot-build
-INTERFACE=br-prov
-#PODMAN="podman --remote"
-PODMAN=podman
+IPXE_PATCH=ipxe.patch
 
-$(IMAGE_NAME)-oci.tgz: build
-	${PODMAN} save --format oci-archive ${IMAGE_NAME} --output $(IMAGE_NAME)-oci.tgz
-
+#
+# Targets to build the container image and push it to the repo
+#
 build: ipxe/src/bin/undionly.kpxe ipxe.efi
 	buildah unshare ./build.sh $(BUILD_CONTAINER_NAME) $(IMAGE_NAME)
 
-clean:
-	-rm miniboot.tgz
-	-buildah delete $(BUILD_CONTAINER_NAME)
-	-${PODMAN} rmi ${IMAGE_NAME}
 
-realclean: clean
-	rm -rf data/coreos
-	rm ipxe.efi
-	cd ipxe/src ; make clean
+ipxe/src/Makefile.housekeeping: ipxe.patch
+	cd ipxe ; \
+  patch -p0 < ../${IPXE_PATCH}
 
-cli:
-	+${PODMAN} run -it --rm --privileged --name miniboot --net=host \
-	  --volume $(shell pwd)/data:/opt \
-	  --entrypoint=/bin/bash \
-	  ${IMAGE_NAME}
-
-run:
-	+${PODMAN} run -d --rm --privileged --name miniboot --net=host \
-	  --volume $(shell pwd)/data:/opt \
-	  $(IMAGE_REPO)/$(REPO_USER)/${IMAGE_NAME}
-
-stop:
-	-${PODMAN} stop miniboot
-	-${PODMAN} rm miniboot
-
-tag:
-	${PODMAN} tag ${IMAGE_NAME} ${IMAGE_REPO}/${REPO_USER}/${IMAGE_NAME}
-
-push:
-	${PODMAN} push $(IMAGE_REPO)/$(REPO_USER)/${IMAGE_NAME}
-
-ipxe/src/bin/undionly.kpxe:
+ipxe/src/bin/undionly.kpxe: ipxe/src/Makefile.housekeeping
 	mkdir -p bin
 	cd ipxe/src ; make bin/undionly.kpxe
 
 ipxe.efi:
 	curl -O http://boot.ipxe.org/ipxe.efi
 
-#
-#
-#
-data:
-	mkdir -p data
-
-data/etc: data
-	mkdir -p data/etc
-
-data/etc/dhcpd.conf: data/etc templates/dhcpd.conf.j2 config_full.yaml
-	jinja2 templates/dhcpd.conf.j2 config_full.yaml > data/etc/dhcpd.conf
-
-data/etc/thttpd.conf: data/etc templates/thttpd.conf.j2 config_full.yaml
-	jinja2 templates/thttpd.conf.j2 config_full.yaml > data/etc/thttpd.conf
-
-
-data/www/pxe: data
-	mkdir -p data/www/pxe
-
+$(TARBALL): build
+	podman save --format oci-archive ${IMAGE_NAME} --output $(IMAGE_NAME)-oci.tgz
 
 #
+# Remove artifacts to start again
 #
-#
-data/www/coreos: data
-	mkdir -p data/www/coreos
-	cd data/www/coreos ; \
-	for ARCH in x86_64 aarch64 ; do \
-	  ${PODMAN} run --privileged --pull=always --rm -v .:/data -w /data \
-	    quay.io/coreos/coreos-installer:release download -a $${ARCH} -f pxe ; \
-	  VERSION=$$(ls fedora-coreos-*-live-kernel-$${ARCH} | cut -d- -f3) ; \
-	  ln -s fedora-coreos-$${VERSION}-live-kernel-$${ARCH} kernel-$${ARCH} ; \
-	  ln -s fedora-coreos-$${VERSION}-live-initramfs.$${ARCH}.img initrd-$${ARCH}.img ; \
-	  ln -s fedora-coreos-$${VERSION}-live-rootfs.$${ARCH}.img rootfs-$${ARCH}.img ; \
-	done
+clean:
+	-rm -f $(TARBALL)
+	-buildah delete $(BUILD_CONTAINER_NAME)
+	-podman rmi ${IMAGE_NAME}
 
-ports:
-	firewall-cmd --add-service dhcp
-	firewall-cmd --add-service tftp
-	firewall-cmd --add-service http
+realclean: clean
+	rm -f ipxe.efi
+	cd ipxe/src ; make clean
+
+#
+# Test and run the server container
+#
+cli:
+	+podman run -it --rm --privileged --name miniboot --net=host \
+	  --volume $(shell pwd)/data:/opt \
+	  --entrypoint=/bin/bash \
+	  ${IMAGE_NAME}
+
+run:
+	+podman run -d --rm --privileged --name miniboot --net=host \
+	  --volume $(shell pwd)/data:/opt \
+	  ${IMAGE_NAME}
+
+stop:
+	-podman stop miniboot
+	-podman rm miniboot
