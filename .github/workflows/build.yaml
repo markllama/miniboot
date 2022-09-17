@@ -13,8 +13,8 @@ jobs:
     runs-on: ubuntu-latest
 
   steps:
-    - name: Checkout current repository
-      uses: actions/checkout@v2
+#    - name: Checkout current repository
+#      uses: actions/checkout@v2
 
     # This process described by Hitesh Jethva, June 12, 2021
     # https://www.atlantic.net/dedicated-server-hosting/how-to-install-and-use-podman-on-ubuntu-20-04/
