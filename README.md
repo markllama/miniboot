@@ -11,10 +11,29 @@ the container is instantiated.
 
 ## Container Configuration
 
-* interface
+    /opt/miniboot/
+        etc/
+            dhcpd.conf
+            thttpd.conf
+        www/
+            ipxe/
+                <nodename>.ipxe
+            coreos/
+                kernel
+                initrd.img
+                rootfs.img
+            fcos/
+                <nodename>/
+                    node.ign
+                    <interface>.nmconnection
 
-* http.port
+## Running the PXE boot service
 
+    podman run -d --privileged --name miniboot \
+      --net=host \
+      --volume /opt/miniboot:/opt \
+      quay.io/markllama/miniboot
+      
 ## References
 
 * [ISC DHCP Server]()
