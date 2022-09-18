@@ -5,7 +5,7 @@
 name: build_image
 
 on:
-  merge:
+  push:
     branches:
     - main
     
