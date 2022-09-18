@@ -42,3 +42,8 @@ jobs:
     - name: Build the package
       run: |
         make build
+
+
+    - name: Tag the image
+      run: |
+        podman tag miniboot quay.io/markllama/miniboot
