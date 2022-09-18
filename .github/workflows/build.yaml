@@ -5,7 +5,10 @@
 name: build_image
 
 on:
-  #push:
+  merge:
+    branches:
+    - main
+    
   workflow_dispatch:
 
 jobs:
@@ -42,7 +45,6 @@ jobs:
     - name: Build the package
       run: |
         make build
-
 
     - name: Tag the image
       run: |
