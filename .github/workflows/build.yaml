@@ -55,3 +55,7 @@ jobs:
         registry: quay.io
         username: ${{ secrets.QUAY_USERNAME }}
         password: ${{ secrets.QUAY_ROBOT_TOKEN }}
+
+    - name: Push new image to quay.io
+      run: |
+        podman push quay.io/markllama/miniboot
