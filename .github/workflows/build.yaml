@@ -8,6 +8,10 @@ on:
   push:
     branches:
     - main
+    paths:
+    - Makefile
+    - build.sh
+    - ipxe.patch
     
   workflow_dispatch:
 
