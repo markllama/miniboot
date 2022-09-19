@@ -54,10 +54,13 @@ function install_and_configure_systemd_services() {
     # Install service packages
     buildah_run ${DNF} -y install ${RPMS[@]}
 
-    # All of the input is mounted on /data
+    # dhcpd.conf refers to the server and lease configs by includes
+    # - /opt/etc/dhcpd_server.conf
+    # - /opt/etc/dhcpd_leases.conf
+    buildah add ${CONTAINER_NAME} dhcpd.conf /etc/dhcpd.conf
+    
+    # The remaining input is mounted on /data
     # Replace the stock config files with symlinks to the import directory: /opt
-    # /etc/dhcp/dhcpd.conf -> /data/dhcpd.conf
-    replace_with_link /etc/dhcp/dhcpd.conf /opt/etc/dhcpd.conf 
     replace_with_link /etc/thttpd.conf /opt/etc/thttpd.conf
     replace_with_link /var/www/thttpd /opt/www
     

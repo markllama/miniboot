@@ -56,8 +56,13 @@ stop:
 	-podman stop miniboot
 	-podman rm miniboot
 
-data:
-	mkdir -p data
+configs: data/etc/thttpd.conf data/etc/dhcpd.conf
 
-data/thttpd.conf: data
-	jinja2 templates/thttpd.conf.j2 config.yaml > data/thttpd.conf
+data/etc:
+	mkdir -p data/etc
+
+data/etc/thttpd.conf: data/etc config.yaml
+	jinja2 templates/thttpd.conf.j2 config.yaml > data/etc/thttpd.conf
+
+data/etc/dhcpd.conf: data/etc config.yaml
+	jinja2 templates/dhcpd.conf.j2 config.yaml > data/etc/dhcpd.conf

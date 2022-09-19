@@ -1,15 +1,3 @@
-#
-# DHCP Server Configuration file.
-#   see /usr/share/doc/dhcp-server/dhcpd.conf.example
-#   see dhcpd.conf(5) man page
-#
-# 
-
-default-lease-time 600;
-max-lease-time 7200;
-
-allow booting;
-allow bootp;
 
 server-name "{{ listen_on.addr }}" ;
 
