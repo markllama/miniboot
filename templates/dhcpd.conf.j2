@@ -1,0 +1,25 @@
+#
+# DHCP Server Configuration file.
+#   see /usr/share/doc/dhcp-server/dhcpd.conf.example
+#   see dhcpd.conf(5) man page
+#
+# 
+
+default-lease-time 600;
+max-lease-time 7200;
+
+allow booting;
+allow bootp;
+
+server-name "{{ listen_on.addr }}" ;
+
+option domain-name "{{ dns.domain }}" ;
+option domain-name-servers {{ dns.nameserver }} ;
+
+include "dhcpd_ipxe_options.conf" ;
+
+subnet {{ network.base }} netmask {{ network.mask }} {
+  option routers {{ network.gate }} ;
+}
+
+include "dhcpd_lease_reservations.conf" ;

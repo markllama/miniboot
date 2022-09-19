@@ -1,0 +1,15 @@
+# BEWARE : No empty lines are allowed!
+# This section overrides defaults
+dir=/var/www/thttpd
+chroot
+user=thttpd         # default = nobody
+logfile=/var/log/thttpd.log
+pidfile=/var/run/thttpd.pid
+# This section _documents_ defaults in effect
+port={{ listen_on.port | default('80') }}
+# nosymlink         # default = !chroot
+# novhost
+# nocgipat
+# nothrottles
+host={{ listen_on.addr | default('0.0.0.0') }}
+# charset=iso-8859-1
