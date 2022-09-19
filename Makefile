@@ -56,7 +56,7 @@ stop:
 	-podman stop miniboot
 	-podman rm miniboot
 
-configs: data/etc/thttpd.conf data/etc/dhcpd.conf
+configs: data/etc/thttpd.conf data/etc/dhcpd.conf data/etc/dhcpd_leases.conf
 
 data/etc:
 	mkdir -p data/etc
