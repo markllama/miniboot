@@ -66,3 +66,6 @@ data/etc/thttpd.conf: data/etc config.yaml
 
 data/etc/dhcpd.conf: data/etc config.yaml
 	jinja2 templates/dhcpd.conf.j2 config.yaml > data/etc/dhcpd.conf
+
+data/etc/dhcpd_leases.conf: data/etc config.yaml
+	jinja2 templates/dhcpd_leases.conf.j2 config.yaml > data/etc/dhcpd_leases.conf
