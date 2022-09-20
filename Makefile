@@ -7,6 +7,8 @@ IPXE_PATCH=ipxe.patch
 REPO_NAME=quay.io
 REPO_USER=markllama
 
+DATA_DIR=./data
+
 #
 # Targets to build the container image and push it to the repo
 #
@@ -58,16 +60,16 @@ stop:
 	-podman stop miniboot
 	-podman rm miniboot
 
-configs: data/etc/thttpd.conf data/etc/dhcpd_server.conf data/etc/dhcpd_leases.conf
+configs: ${DATA_DIR}/etc/thttpd.conf ${DATA_DIR}/etc/dhcpd_server.conf ${DATA_DIR}/etc/dhcpd_leases.conf
 
-data/etc:
-	mkdir -p data/etc
+$(DATA_DIR)/etc:
+	mkdir -p $(DATA_DIR)/etc
 
-data/etc/thttpd.conf: data/etc config.yaml
-	jinja2 templates/thttpd.conf.j2 config.yaml > data/etc/thttpd.conf
+$(DATA_DIR)/etc/thttpd.conf: $(DATA_DIR)/etc config.yaml
+	jinja2 templates/thttpd.conf.j2 config.yaml > $(DATA_DIR)/etc/thttpd.conf
 
-data/etc/dhcpd_server.conf: data/etc config.yaml
-	jinja2 templates/dhcpd_server.conf.j2 config.yaml > data/etc/dhcpd_server.conf
+$(DATA_DIR)/etc/dhcpd_server.conf: $(DATA_DIR)/etc config.yaml
+	jinja2 templates/dhcpd_server.conf.j2 config.yaml > $(DATA_DIR)/etc/dhcpd_server.conf
 
-data/etc/dhcpd_leases.conf: data/etc config.yaml
-	jinja2 templates/dhcpd_leases.conf.j2 config.yaml > data/etc/dhcpd_leases.conf
+$(DATA_DIR)/etc/dhcpd_leases.conf: $(DATA_DIR)/etc config.yaml
+	jinja2 templates/dhcpd_leases.conf.j2 config.yaml > $(DATA_DIR)/etc/dhcpd_leases.conf
