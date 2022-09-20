@@ -60,10 +60,13 @@ stop:
 	-podman stop miniboot
 	-podman rm miniboot
 
-configs: ${DATA_DIR}/etc/thttpd.conf ${DATA_DIR}/etc/dhcpd_server.conf ${DATA_DIR}/etc/dhcpd_leases.conf
+configs: ${DATA_DIR}/etc/thttpd.conf ${DATA_DIR}/etc/dhcpd_server.conf ${DATA_DIR}/etc/dhcpd_leases.conf $(DATA_DIR)/www
 
 $(DATA_DIR)/etc:
 	mkdir -p $(DATA_DIR)/etc
+
+$(DATA_DIR)/www: 
+	mkdir -p $(DATA_DIR)/www
 
 $(DATA_DIR)/etc/thttpd.conf: $(DATA_DIR)/etc config.yaml
 	jinja2 templates/thttpd.conf.j2 config.yaml > $(DATA_DIR)/etc/thttpd.conf

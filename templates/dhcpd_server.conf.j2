@@ -4,10 +4,6 @@ server-name "{{ listen_on.addr }}" ;
 option domain-name "{{ dns.domain }}" ;
 option domain-name-servers {{ dns.nameserver }} ;
 
-include "dhcpd_ipxe_options.conf" ;
-
 subnet {{ network.base }} netmask {{ network.mask }} {
   option routers {{ network.gate }} ;
 }
-
-include "dhcpd_lease_reservations.conf" ;
