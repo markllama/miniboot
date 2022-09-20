@@ -4,6 +4,8 @@ IMAGE_NAME=miniboot
 TARBALL=${IMAGE_NAME}-oci.tgz
 BUILD_CONTAINER_NAME=miniboot-build
 IPXE_PATCH=ipxe.patch
+REPO_NAME=quay.io
+REPO_USER=markllama
 
 #
 # Targets to build the container image and push it to the repo
@@ -45,12 +47,12 @@ cli:
 	+podman run -it --rm --privileged --name miniboot --net=host \
 	  --volume $(shell pwd)/data:/opt \
 	  --entrypoint=/bin/bash \
-	  ${IMAGE_NAME}
+	  ${REPO_NAME}/${REPO_USER}/${IMAGE_NAME}
 
 run:
 	+podman run -d --rm --privileged --name miniboot --net=host \
 	  --volume $(shell pwd)/data:/opt \
-	  ${IMAGE_NAME}
+	  ${REPO_NAME}/${REPO_USER}/${IMAGE_NAME}
 
 stop:
 	-podman stop miniboot
