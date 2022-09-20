@@ -11,6 +11,7 @@ on:
     paths:
     - Makefile
     - build.sh
+    - dhcpd.conf
     - ipxe.patch
     
   workflow_dispatch:
