@@ -4,6 +4,8 @@ IMAGE_NAME=miniboot
 TARBALL=${IMAGE_NAME}-oci.tgz
 BUILD_CONTAINER_NAME=miniboot-build
 IPXE_PATCH=ipxe.patch
+REPO_NAME=quay.io
+REPO_USER=markllama
 
 #
 # Targets to build the container image and push it to the repo
@@ -45,19 +47,27 @@ cli:
 	+podman run -it --rm --privileged --name miniboot --net=host \
 	  --volume $(shell pwd)/data:/opt \
 	  --entrypoint=/bin/bash \
-	  ${IMAGE_NAME}
+	  ${REPO_NAME}/${REPO_USER}/${IMAGE_NAME}
 
 run:
 	+podman run -d --rm --privileged --name miniboot --net=host \
 	  --volume $(shell pwd)/data:/opt \
-	  ${IMAGE_NAME}
+	  ${REPO_NAME}/${REPO_USER}/${IMAGE_NAME}
 
 stop:
 	-podman stop miniboot
 	-podman rm miniboot
 
-data:
-	mkdir -p data
+configs: data/etc/thttpd.conf data/etc/dhcpd.conf data/etc/dhcpd_leases.conf
 
-data/thttpd.conf: data
-	jinja2 templates/thttpd.conf.j2 config.yaml > data/thttpd.conf
+data/etc:
+	mkdir -p data/etc
+
+data/etc/thttpd.conf: data/etc config.yaml
+	jinja2 templates/thttpd.conf.j2 config.yaml > data/etc/thttpd.conf
+
+data/etc/dhcpd_server.conf: data/etc config.yaml
+	jinja2 templates/dhcpd_server.conf.j2 config.yaml > data/etc/dhcpd_server.conf
+
+data/etc/dhcpd_leases.conf: data/etc config.yaml
+	jinja2 templates/dhcpd_leases.conf.j2 config.yaml > data/etc/dhcpd_leases.conf

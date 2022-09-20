@@ -1,3 +1,17 @@
+#
+# This file contains the lease reservations for the bootable systems.
+#
+# nodes:
+#   - arch: <x86_64|aarch64>
+#     hostname: <hostname>
+#     nics:
+#       - name: <device name>
+#         network: <net name>
+#         mac_address: <mac address>
+#         ipv4_address: <dotted quad>
+#       ...
+#     provisioning_nic: <device name>   # optional - triggers PXE boot section
+#
 {%- for node in nodes %}
 
 host pxeclient-{{ node.hostname }} {
