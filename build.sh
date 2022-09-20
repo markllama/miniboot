@@ -57,7 +57,7 @@ function install_and_configure_systemd_services() {
     # dhcpd.conf refers to the server and lease configs by includes
     # - /opt/etc/dhcpd_server.conf
     # - /opt/etc/dhcpd_leases.conf
-    buildah add ${CONTAINER_NAME} dhcpd.conf /etc/dhcpd.conf
+    buildah add ${CONTAINER_NAME} dhcpd.conf /etc/dhcp/dhcpd.conf
     
     # The remaining input is mounted on /data
     # Replace the stock config files with symlinks to the import directory: /opt
