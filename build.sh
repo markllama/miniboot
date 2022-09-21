@@ -11,13 +11,14 @@ IMAGE_NAME=$2
 BASE_IMAGE=registry.fedoraproject.org/fedora-minimal:36
 DNF=microdnf
 
-RPMS=(systemd dhcp-server tftp-server thttpd)
+RPMS=(systemd dhcp-server tftp-server thttpd python3-watchdog)
 SERVICES=(dhcpd tftp thttpd)
 PXE_BINARIES=(ldlinux.c32  lpxelinux.0  memdisk  pxelinux.0)
 
 function main() {
     set_container_metadata
     install_and_configure_systemd_services
+    install_dhcpd_watchdog
     populate_pxelinux_binaries
     populate_ipxe_binaries
     finalize_container_image
@@ -68,6 +69,13 @@ function install_and_configure_systemd_services() {
     buildah_run systemctl enable ${SERVICES[@]}
     # Start with systemd
     buildah config --cmd '["/usr/sbin/init"]' ${CONTAINER_NAME} 
+}
+
+function install_dhcpd_watchdog() {
+    # Reload dhcpd when config files change
+    buildah add ${CONTAINER_NAME} dhcpd-watchdog.py /usr/local/bin/dhcpd-watchdog
+    buildah add ${CONTAINER_NAME} dhcpd-watchdog.service /etc/systemd/system/multi-user.target.wants/dhcpd-watchdog.service
+    buildah_run chmod a+x /usr/local/bin/dhcpd-watchdog
 }
 
 function populate_pxelinux_binaries() {
