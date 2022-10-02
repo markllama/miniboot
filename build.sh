@@ -24,7 +24,6 @@ function main() {
     finalize_container_image
 }
 
-
 # A shortcut for commands that run inside the container
 function buildah_run() {
     buildah run ${CONTAINER_NAME} $*
